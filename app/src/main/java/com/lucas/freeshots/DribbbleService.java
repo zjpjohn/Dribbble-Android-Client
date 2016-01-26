@@ -13,5 +13,5 @@ import rx.Observable;
 public interface DribbbleService {
     @Headers(Dribbble.AUTHORIZATION)
     @GET("shots")
-    Observable<List<Shot>> listShots(@Query("sort") String sort);
+    Observable<List<Shot>> listShots(@Query("page") int page, @Query("sort") String sort);
 }

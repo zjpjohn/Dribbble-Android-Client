@@ -52,7 +52,17 @@ public class Shot implements Serializable {
     public User user;
     public Team team;
 
-//    @Override
+    @Override
+    public boolean equals(Object o) {
+        return o != null && o instanceof Shot && (this == o || id == ((Shot) o).id);
+    }
+
+    @Override
+    public int hashCode() {
+        return ((Integer) id).hashCode();
+    }
+
+    //    @Override
 //    public String toString() {
 //        // TODO: 项目太多了，写不过来，可否用反射的方法做？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
 //        String s =  String.format("{\n" +

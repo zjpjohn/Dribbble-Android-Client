@@ -11,24 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lucas.freeshots.DribbbleService;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.ShotAdapter;
-import com.lucas.freeshots.common.Dribbble;
 import com.lucas.freeshots.model.Shot;
 import com.lucas.freeshots.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import hugo.weaving.DebugLog;
-import retrofit2.GsonConverterFactory;
-import retrofit2.Retrofit;
-import retrofit2.RxJavaCallAdapterFactory;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class PopularFragment extends Fragment {
     private static final String TAG = "PopularFragment";
@@ -60,40 +49,40 @@ public class PopularFragment extends Fragment {
         recyclerView.setPadding(spacing / 2, spacing / 2, spacing / 2, spacing / 2);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        downloadShots();
+        //downloadShots();
     }
 
-    private void downloadShots() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(Dribbble.API_ADDRESS)
-                .build();
-        DribbbleService service = retrofit.create(DribbbleService.class);
-
-        service.listShots(Dribbble.SHOT_SORT_BY_VIEWS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<Shot>>() {
-                    @Override
-                    public void onCompleted() {
-                        Timber.e("Completed!");
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e("listShots Failure: " + e.getMessage());
-                    }
-
-                    @DebugLog
-                    @Override
-                    public void onNext(List<Shot> newShots) {
-                        shots.clear();
-                        shots.addAll(newShots);
-                    }
-                });
-    }
+//    private void downloadShots() {
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                .baseUrl(Dribbble.API_ADDRESS)
+//                .build();
+//        DribbbleService service = retrofit.create(DribbbleService.class);
+//
+//        service.listShots(Dribbble.SHOT_SORT_BY_VIEWS)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Subscriber<List<Shot>>() {
+//                    @Override
+//                    public void onCompleted() {
+//                        Timber.e("Completed!");
+//                        adapter.notifyDataSetChanged();
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        Timber.e("listShots Failure: " + e.getMessage());
+//                    }
+//
+//                    @DebugLog
+//                    @Override
+//                    public void onNext(List<Shot> newShots) {
+//                        shots.clear();
+//                        shots.addAll(newShots);
+//                    }
+//                });
+//    }
 
     private static class GridItemDecoration extends RecyclerView.ItemDecoration {
         private int spacing;

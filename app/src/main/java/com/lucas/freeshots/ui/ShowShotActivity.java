@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +20,7 @@ import com.lucas.freeshots.model.Shot;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class ShowShotActivity extends AppCompatActivity {
 
@@ -28,6 +30,7 @@ public class ShowShotActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
+    @Bind(R.id.app_bar) AppBarLayout appBarLayout;
     @Bind(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
     @Bind(R.id.shot) SimpleDraweeView shotDv;
     @Bind(R.id.author_icon) SimpleDraweeView authorIconDv;
@@ -64,8 +67,14 @@ public class ShowShotActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        toolbarLayout.setTitle("   ");
+        //toolbarLayout.setTitle("   ");
         //d.setContentScrimColor(cc);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                Timber.e("verticalOffset:      " + verticalOffset);
+            }
+        });
 
         Shot shot = (Shot) getIntent().getSerializableExtra("shot");
 

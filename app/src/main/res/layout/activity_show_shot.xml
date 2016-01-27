@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed" >
 
             <!-- 设置宽高比为4:3(fresco:viewAspectRatio="1.33")，因为Dribbble上的图片宽高比为4:3 -->

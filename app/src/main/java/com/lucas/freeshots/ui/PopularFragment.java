@@ -42,7 +42,7 @@ public class PopularFragment extends Fragment {
 
         int spacing = Util.dp2px(activity, 8); // 间隔为8dp
 
-        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.popularShotRecyclerView);
+        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.popular_shots);
         recyclerView.setLayoutManager(new GridLayoutManager(activity, 2));
         recyclerView.setAdapter(adapter = new ShotAdapter(shots));
         recyclerView.addItemDecoration(new GridItemDecoration(spacing));

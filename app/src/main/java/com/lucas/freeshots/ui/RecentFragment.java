@@ -23,6 +23,8 @@ import com.lucas.freeshots.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import rx.Subscriber;
 import timber.log.Timber;
 
@@ -35,7 +37,7 @@ public class RecentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recent, container, false);
-        //ButterKnife.bind(this, view);
+        ButterKnife.bind(this, view);
         return view;
     }
 
@@ -44,8 +46,9 @@ public class RecentFragment extends Fragment {
 
     private boolean isLoading = false;
     private Activity activity;
-  //  @Bind(R.id.loading_more) View loadingMore;
-    SwipeRefreshLayout refreshLayout;
+
+    //  @Bind(R.id.loading_more) View loadingMore;
+    @Bind(R.id.refresh_layout) SwipeRefreshLayout refreshLayout;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -54,12 +57,23 @@ public class RecentFragment extends Fragment {
 
         int spacing = Util.dp2px(activity, 8); // 间隔为8dp
 
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(activity, 2);
+
+
         RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recent_shots);
-        recyclerView.setLayoutManager(new GridLayoutManager(activity, 2));
+        recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(adapter = new ShotAdapter(shots));
         recyclerView.addItemDecoration(new GridItemDecoration(spacing));
         recyclerView.setPadding(spacing / 2, spacing / 2, spacing / 2, spacing / 2);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        //设置底部View(下拉至底部loading more的View)占据整行空间
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return adapter.isBottomView(position) ? gridLayoutManager.getSpanCount() : 1;
+            }
+        });
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -73,20 +87,21 @@ public class RecentFragment extends Fragment {
 
                 // 滑到了底部则自动加载下一页shot
                 if (!ViewCompat.canScrollVertically(recyclerView, 1)) {
-                     loadNextPage();
+                    loadNextPage();
                 }
             }
         });
 
-        refreshLayout = (SwipeRefreshLayout) activity.findViewById(R.id.refresh_layout);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadFirstPage();
-            }
+        SwipeRefreshLayout.OnRefreshListener listener = this::loadFirstPage;
+        refreshLayout.setOnRefreshListener(listener);
+        refreshLayout.post(() -> {
+            // 自动加载首页
+            listener.onRefresh();
+            refreshLayout.setRefreshing(true);
         });
     }
 
+    //private static final int INVALID_PAGE = 0;
     private int currPage = 0;
 
     /**
@@ -121,7 +136,7 @@ public class RecentFragment extends Fragment {
             adapter.notifyDataSetChanged();
             isLoading = false;
             //loadingMore.setVisibility(View.GONE);
-            if(refreshLayout.isRefreshing()) {
+            if(refreshLayout != null && refreshLayout.isRefreshing()) {
                 refreshLayout.setRefreshing(false);
             }
         }
@@ -132,17 +147,13 @@ public class RecentFragment extends Fragment {
             Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
             isLoading = false;
             //loadingMore.setVisibility(View.GONE);
-            if(refreshLayout.isRefreshing()) {
+            if(refreshLayout != null && refreshLayout.isRefreshing()) {
                 refreshLayout.setRefreshing(false);
             }
         }
 
         @Override
         public void onNext(List<Shot> newShots) {
-            if(currPage == 1) {
-                shots.clear();
-            }
-
             for(Shot shot : newShots) {
                 if(!shots.contains(shot)) {
                     shots.add(shot);
@@ -155,7 +166,7 @@ public class RecentFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-    //    ButterKnife.unbind(this);
+        ButterKnife.unbind(this);
     }
 
     private static class GridItemDecoration extends RecyclerView.ItemDecoration {

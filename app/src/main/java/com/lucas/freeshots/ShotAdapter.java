@@ -20,6 +20,9 @@ import hugo.weaving.DebugLog;
 import timber.log.Timber;
 
 public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
+    private static final int VIEW_TYPE_SHOT = 1;
+    private static final int VIEW_TYPE_BOTTOM = 2;
+
     private List<Shot> shots;
 
     public ShotAdapter(List<Shot> shots) {
@@ -32,15 +35,24 @@ public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.shot, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-        //...
-        return new ViewHolder(v);
+        View v = null;
+        if(viewType == VIEW_TYPE_SHOT) {
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.shot, parent, false);
+        } else if(viewType == VIEW_TYPE_BOTTOM) {
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_loading_more, parent, false);
+        } else {
+            Timber.e("Unknown viewType: %d", viewType);
+        }
+
+        return new ViewHolder(v, viewType);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        if(isBottomView(position)) {
+            return;
+        }
+
         final Shot shot = shots.get(position);
         String uriStr = shot.images.teaser;
         if(uriStr == null) {
@@ -70,10 +82,20 @@ public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
         });
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position == getItemCount() - 1 ? VIEW_TYPE_BOTTOM : VIEW_TYPE_SHOT;
+    }
+
     @DebugLog
     @Override
     public int getItemCount() {
-        return shots.size();
+        // 加1为加上Bottom View，shots.size() == 0时没有Bottom View
+        return shots.size() == 0 ? 0 : shots.size() + 1;
+    }
+
+    public boolean isBottomView(int position) {
+        return position == shots.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -85,9 +107,14 @@ public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
         @Bind(R.id.comments_count) public TextView commentsCountTv;
         @Bind(R.id.likes_count) public TextView likesCountTv;
 
-        public ViewHolder(View v) {
+        int viewType;
+
+        public ViewHolder(View v, int viewType) {
             super(v);
-            ButterKnife.bind(this, v);
+            this.viewType = viewType;
+            if(viewType == VIEW_TYPE_SHOT) {
+                ButterKnife.bind(this, v);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +25,7 @@ import timber.log.Timber;
 
 public class ShowShotActivity extends AppCompatActivity {
 
-    public static void startMyself(Context context, Shot shot) {
+    public static void startMyself(Context context, @NonNull Shot shot) {
         Intent intent = new Intent(context, ShowShotActivity.class);
         intent.putExtra("shot", shot);
         context.startActivity(intent);
@@ -102,6 +103,10 @@ public class ShowShotActivity extends AppCompatActivity {
                     String.valueOf(shot.user.name), String.valueOf(shot.user.updated_at));
             authorNameTv.setText(s);
         }
+
+        commentIv.setOnClickListener((view) -> {
+            CommentActivity.startMyself(ShowShotActivity.this, shot);
+        });
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {

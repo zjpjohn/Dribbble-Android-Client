@@ -131,7 +131,7 @@ public class RecentFragment extends Fragment {
 
         @Override
         public void onCompleted() {
-            Timber.e("Completed!");
+            Timber.e("RecentFragment Completed!");
             // adapter.notifyItemInserted();
             adapter.notifyDataSetChanged();
             isLoading = false;

@@ -2,6 +2,7 @@ package com.lucas.freeshots;
 
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +26,7 @@ public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
 
     private List<Shot> shots;
 
-    public ShotAdapter(List<Shot> shots) {
-        if(shots == null) {
-            return;
-        }
-
+    public ShotAdapter(@NonNull List<Shot> shots) {
         this.shots = shots;
     }
 

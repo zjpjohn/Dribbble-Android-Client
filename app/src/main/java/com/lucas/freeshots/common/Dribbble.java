@@ -2,6 +2,7 @@ package com.lucas.freeshots.common;
 
 
 import com.lucas.freeshots.DribbbleService;
+import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Shot;
 
 import java.util.List;
@@ -34,6 +35,24 @@ public class Dribbble {
         DribbbleService service = retrofit.create(DribbbleService.class);
 
         return service.listShots(page, sort)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     *
+     * @param id 要下载Comment的Shot的id
+     * @return
+     */
+    public static Observable<List<Comment>> downloadComment(int id) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .baseUrl(Dribbble.API_ADDRESS)
+                .build();
+        DribbbleService service = retrofit.create(DribbbleService.class);
+
+        return service.getComment(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

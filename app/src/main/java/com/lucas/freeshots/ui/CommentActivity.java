@@ -14,6 +14,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,7 +129,7 @@ public class CommentActivity extends AppCompatActivity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             Comment comment = comments.get(position);
 
-            holder.commentTv.setText(comment.body);
+            holder.commentTv.setText(Html.fromHtml(comment.body));
             holder.updatedTimeTv.setText(comment.updated_at);
 
             if(comment.user != null) {

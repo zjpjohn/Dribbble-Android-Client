@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,87 +16,99 @@
             android:id="@+id/shot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            fresco:viewAspectRatio="1.33"
-            fresco:roundedCornerRadius="4dp"
             android:scaleType="fitCenter"
-            fresco:placeholderImage="@mipmap/ic_launcher" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="16dp"
-            android:singleLine="true"
-            android:textColor="@color/colorPrimaryText"
-            android:textSize="16sp" />
+            fresco:placeholderImage="@mipmap/ic_launcher"
+            fresco:roundedCornerRadius="4dp"
+            fresco:viewAspectRatio="1.33" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:orientation="horizontal">
 
             <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/author_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                fresco:roundAsCircle="true"
-                fresco:placeholderImage="@mipmap/ic_launcher" />
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                fresco:placeholderImage="@mipmap/ic_launcher"
+                fresco:roundAsCircle="true" />
 
-            <TextView
-                android:id="@+id/author_name"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:paddingBottom="16dp"
                 android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingTop="16dp"
-                android:singleLine="true"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/author_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:paddingTop="8dp"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="16dp"
+            android:paddingRight="16dp">
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_shot_views" />
 
             <TextView
                 android:id="@+id/views_count"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"/>
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:paddingLeft="4dp"
                 android:scaleType="fitXY"
                 android:src="@mipmap/ic_launcher" />
 
             <TextView
                 android:id="@+id/comments_count"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"/>
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:paddingLeft="4dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_shot_liked" />
 
             <TextView
                 android:id="@+id/likes_count"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

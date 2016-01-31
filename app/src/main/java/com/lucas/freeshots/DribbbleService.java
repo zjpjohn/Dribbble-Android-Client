@@ -18,6 +18,10 @@ public interface DribbbleService {
     Observable<List<Shot>> listShots(@Query("page") int page, @Query("sort") String sort);
 
     @Headers(Dribbble.AUTHORIZATION)
+    @GET("user/following/shots")
+    Observable<List<Shot>> listFollowingShots(@Query("page") int page);
+
+    @Headers(Dribbble.AUTHORIZATION)
     @GET("shots/{id}/comments")
     Observable<List<Comment>> getComment(@Path("id") int id);
 }

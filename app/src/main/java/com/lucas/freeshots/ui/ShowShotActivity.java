@@ -9,6 +9,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -80,8 +81,8 @@ public class ShowShotActivity extends AppCompatActivity {
         Shot shot = (Shot) getIntent().getSerializableExtra("shot");
 
         shotDv.setImageURI(Uri.parse(shot.images.getHeightImageUri()));
-        shotTitleTv.setText(String.valueOf(shot.title) + " : " + shot.images.getType() + " : " + shot.width + ", " + shot.height);
-        shotDescribeTv.setText(String.valueOf(shot.description));
+        shotTitleTv.setText(shot.title + " : " + shot.images.getType() + " : " + shot.width + ", " + shot.height);
+        shotDescribeTv.setText(Html.fromHtml(shot.description));
 
         likesCountTv.setText(String.valueOf(shot.likes_count));
         commentsCountTv.setText(String.valueOf(shot.comments_count));

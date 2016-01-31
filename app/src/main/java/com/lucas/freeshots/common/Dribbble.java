@@ -26,15 +26,25 @@ public class Dribbble {
     public static final String SHOT_SORT_BY_RECENT = "recent";
     public static final String SHOT_SORT_BY_VIEWS = "views";
 
-    public static Observable<List<Shot>> downloadShots(int page, String sort) {
+    private static DribbbleService service;
+
+    static {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(Dribbble.API_ADDRESS)
                 .build();
-        DribbbleService service = retrofit.create(DribbbleService.class);
+        service = retrofit.create(DribbbleService.class);
+    }
 
+    public static Observable<List<Shot>> downloadShots(int page, String sort) {
         return service.listShots(page, sort)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<List<Shot>> downloadFollowingShots(int page) {
+        return service.listFollowingShots(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -42,16 +52,8 @@ public class Dribbble {
     /**
      *
      * @param id 要下载Comment的Shot的id
-     * @return
      */
     public static Observable<List<Comment>> downloadComment(int id) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(Dribbble.API_ADDRESS)
-                .build();
-        DribbbleService service = retrofit.create(DribbbleService.class);
-
         return service.getComment(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

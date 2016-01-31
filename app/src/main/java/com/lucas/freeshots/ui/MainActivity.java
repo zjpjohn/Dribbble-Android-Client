@@ -2,9 +2,7 @@ package com.lucas.freeshots.ui;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -17,16 +15,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.common.Dribbble;
+import com.lucas.freeshots.model.Shot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import rx.Observable;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, Serializable {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +37,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -77,8 +79,8 @@ public class MainActivity extends AppCompatActivity
     private void initTabLayoutAndViewPager(final Toolbar toolbar) {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
-        final List<String> tabTitleList = new ArrayList<>();
-        final Resources res = getResources();
+        List<String> tabTitleList = new ArrayList<>();
+        Resources res = getResources();
         tabTitleList.add(res.getString(R.string.recent));
         tabTitleList.add(res.getString(R.string.popular));
         tabTitleList.add(res.getString(R.string.following));
@@ -87,12 +89,32 @@ public class MainActivity extends AppCompatActivity
         tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(1)));
         tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(2)));
 
-        FollowingFragment followingFragment = new FollowingFragment();
-        PopularFragment popularFragment = new PopularFragment();
-        RecentFragment recentFragment = new RecentFragment();
+        Fragment recentShotsFragment = DisplayShotsFragment.newInstance(new DisplayShotsFragment.Source() {
+
+            @Override
+            Observable<List<Shot>> get(int page) {
+                return Dribbble.downloadShots(page, Dribbble.SHOT_SORT_BY_RECENT);
+            }
+        });
+
+        Fragment popularShotsFragment = DisplayShotsFragment.newInstance(new DisplayShotsFragment.Source() {
+
+            @Override
+            Observable<List<Shot>> get(int page) {
+                return Dribbble.downloadShots(page, Dribbble.SHOT_SORT_BY_VIEWS);
+            }
+        });
+
+        Fragment followingShotsFragment = DisplayShotsFragment.newInstance(new DisplayShotsFragment.Source() {
+
+            @Override
+            Observable<List<Shot>> get(int page) {
+                return Dribbble.downloadFollowingShots(page);
+            }
+        });
 
         final List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.addAll(Arrays.asList(recentFragment, popularFragment, followingFragment));
+        fragmentList.addAll(Arrays.asList(recentShotsFragment, popularShotsFragment, followingShotsFragment));
 
         PagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override

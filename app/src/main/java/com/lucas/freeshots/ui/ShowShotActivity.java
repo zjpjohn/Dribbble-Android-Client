@@ -8,8 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +31,9 @@ public class ShowShotActivity extends AppCompatActivity {
         intent.putExtra("shot", shot);
         context.startActivity(intent);
     }
+
+    @Bind(R.id.top_bar) LinearLayout topBar;
+    @Bind(R.id.top_bar_shot_title) TextView topBarShotTitleTv;
 
     @Bind(R.id.app_bar) AppBarLayout appBarLayout;
     @Bind(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
@@ -55,34 +58,62 @@ public class ShowShotActivity extends AppCompatActivity {
     public void clickLike(ImageView likeIv) {
     }
 
+    @OnClick(R.id.back)
+    public void clickLike(View view) {
+        view.setOnClickListener(v -> finish());
+    }
+
     //@BindColor(R.color.cardview_light_background) int cc;///////////////////////////////////////////////////
+
+    int topBarHeight;
+    int appBarLayoutHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_shot);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.mipmap.abc_ic_action_back);
-        toolbar.setNavigationOnClickListener(view -> finish());
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        toolbar.setNavigationIcon(R.mipmap.abc_ic_action_back);
+//        toolbar.setNavigationOnClickListener(view -> finish());
 
         ButterKnife.bind(this);
 
-        //toolbarLayout.setTitle("   ");
-        //d.setContentScrimColor(cc);
+        Shot shot = (Shot) getIntent().getSerializableExtra("shot");
+
+        toolbarLayout.setTitle(" ");
+        //toolbarLayout.setContentScrim(null);
+        //toolbarLayout.setContentScrimColor(cc);
+
+
+
+        topBar.post(() -> {
+            topBarHeight = topBar.getHeight();
+            appBarLayoutHeight = appBarLayout.getHeight();
+        });
+
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                Timber.e("verticalOffset:      " + verticalOffset);
+                Timber.e("verticalOffset:      " + verticalOffset
+                        + "    appBarLayoutHeight:     " + appBarLayoutHeight
+                                + "  topBarHeight:" + topBarHeight
+                );
+
+                if(verticalOffset != 0 && appBarLayoutHeight + verticalOffset <= topBarHeight) {
+                    Timber.e(shot.title);
+                    topBarShotTitleTv.setText(shot.title);
+                    //topBar.setAlpha((float) 0.1);
+                }
             }
         });
 
-        Shot shot = (Shot) getIntent().getSerializableExtra("shot");
-
         shotDv.setImageURI(Uri.parse(shot.images.getHeightImageUri()));
         shotTitleTv.setText(shot.title + " : " + shot.images.getType() + " : " + shot.width + ", " + shot.height);
-        shotDescribeTv.setText(Html.fromHtml(shot.description));
+        if(shot.description != null) {
+            shotDescribeTv.setText(Html.fromHtml(shot.description));
+        }
 
         likesCountTv.setText(String.valueOf(shot.likes_count));
         commentsCountTv.setText(String.valueOf(shot.comments_count));

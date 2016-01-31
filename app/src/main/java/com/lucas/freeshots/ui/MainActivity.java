@@ -56,21 +56,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initTabLayoutAndViewPager(toolbar);
-
-
-
-//        Observable.just("Hello, world!")
-//                .subscribe(new Action1<String>() {
-//                    @Override
-//                    public void call(String s) {
-//                        Log.e("", "sssssssssssssssssssssssssssssssssssss");
-//                    }
-//                });
-
-        //AppObservable g;
-
-
-
     }
 
     /**

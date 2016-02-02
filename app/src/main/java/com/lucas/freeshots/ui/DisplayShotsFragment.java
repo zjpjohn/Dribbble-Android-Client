@@ -3,7 +3,7 @@ package com.lucas.freeshots.ui;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,26 +24,29 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
 
-public class DisplayShotsFragment extends Fragment {
-    private Source source;
+import static com.lucas.freeshots.util.Util.$;
+
+public class DisplayShotsFragment extends Fragment implements Serializable {
 
     public DisplayShotsFragment() {
 
     }
 
-    public static abstract class Source implements Serializable {
-        abstract Observable<List<Shot>> get(int page);
+    public interface Source {
+        Observable<List<Shot>> get(int page);
     }
 
-    public static DisplayShotsFragment newInstance(@NonNull Source source) {
+    /**
+     *
+     * @param logTag 打印日志时的标签
+     */
+    public static DisplayShotsFragment newInstance(@Nullable String logTag) {
         Bundle args = new Bundle();
-        args.putSerializable("source", source);
+        args.putString("logTag", logTag != null ? logTag : "No log tag");
 
         DisplayShotsFragment fragment = new DisplayShotsFragment();
         fragment.setArguments(args);
@@ -51,14 +54,30 @@ public class DisplayShotsFragment extends Fragment {
         return fragment;
     }
 
-    @Bind(R.id.refresh_layout) SwipeRefreshLayout refreshLayout;
-    @Bind(R.id.shots) RecyclerView recyclerView;
+    private Source source;
+    private String logTag;
+
+    public void setSource(Source source) {
+        this.source = source;
+    }
+
+    private SwipeRefreshLayout refreshLayout;
+    private RecyclerView recyclerView;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle bundle = getArguments();
+        logTag = bundle.getString("logTag");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_display_shots, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+        View v = inflater.inflate(R.layout.fragment_display_shots, container, false);
+        refreshLayout = $(v, R.id.refresh_layout);
+        recyclerView = $(v, R.id.shots);
+        return v;
     }
 
     private List<Shot> shots = new ArrayList<>();
@@ -72,14 +91,10 @@ public class DisplayShotsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         activity = getActivity();
 
-        Bundle bundle = getArguments();
-        source = (Source) bundle.getSerializable("source");
-
         int spacing = Util.dp2px(activity, 8); // 间隔为8dp
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(activity, 2);
 
-        //RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.shots);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(adapter = new ShotAdapter(shots));
         recyclerView.addItemDecoration(new GridItemDecoration(spacing));
@@ -127,12 +142,11 @@ public class DisplayShotsFragment extends Fragment {
      * 加载第一页shots
      */
     private void loadFirstPage() {
-        if(!isLoading) {
+        if(source != null && !isLoading) {
             isLoading = true;
             shots.clear();
             currPage = 1;
             source.get(currPage).subscribe(new ShotsReceivedSubscriber());
-            //Dribbble.downloadShots(currPage, Dribbble.SHOT_SORT_BY_RECENT).subscribe(new ShotsReceivedSubscriber());
         }
     }
 
@@ -140,10 +154,9 @@ public class DisplayShotsFragment extends Fragment {
      * 加载下一页shots
      */
     private void loadNextPage() {
-        if(!isLoading) {
+        if(source != null && !isLoading) {
             isLoading = true;
             source.get(++currPage).subscribe(new ShotsReceivedSubscriber());
-            //Dribbble.downloadShots(++currPage, Dribbble.SHOT_SORT_BY_RECENT).subscribe(new ShotsReceivedSubscriber());
         }
     }
 
@@ -151,7 +164,7 @@ public class DisplayShotsFragment extends Fragment {
 
         @Override
         public void onCompleted() {
-            Timber.e("RecentFragment Completed!");
+            Timber.e("%s: RecentFragment Completed!", logTag);
             // adapter.notifyItemInserted();
             adapter.notifyDataSetChanged();
             isLoading = false;
@@ -166,7 +179,7 @@ public class DisplayShotsFragment extends Fragment {
 
             // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
 
-            Timber.e("listShots Failure: " + e.getMessage());
+            Timber.e("%s: listShots Failure: %s", logTag, e.getMessage());
             Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
             isLoading = false;
             //loadingMore.setVisibility(View.GONE);
@@ -177,9 +190,9 @@ public class DisplayShotsFragment extends Fragment {
 
         @Override
         public void onNext(List<Shot> newShots) {
-            Timber.e("FFFFFFFFFFFFFFFFFFFFFF       " + newShots.size());
+            Timber.e("%s: FFFFFFFFFFFFFFFFFFFFFF       %d", logTag, newShots.size());
             if(newShots.size() == 0) {
-                // TODO: 无数据，这是要隐藏底部的"loading more..."
+                // TODO: 无数据，这时要隐藏底部的"loading more..."
                 return;
             }
 
@@ -190,12 +203,6 @@ public class DisplayShotsFragment extends Fragment {
             }
             //shots.addAll(newShots);
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     private static class GridItemDecoration extends RecyclerView.ItemDecoration {

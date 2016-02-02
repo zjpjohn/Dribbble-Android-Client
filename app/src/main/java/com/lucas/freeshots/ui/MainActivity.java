@@ -1,14 +1,10 @@
 package com.lucas.freeshots.ui;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,17 +14,16 @@ import android.view.MenuItem;
 
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Dribbble;
-import com.lucas.freeshots.model.Shot;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import rx.Observable;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Serializable {
+
+    private FragmentManager fragmentManager;
+
+    private HomeFragment homeFragment;
+    private DisplayShotsFragment likesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +41,8 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
+        //FrameLayout mainFrameLayout = Util.$(this, R.id.main_frame_layout);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -55,79 +52,17 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        initTabLayoutAndViewPager(toolbar);
-    }
+        homeFragment = HomeFragment.newInstance();
+        likesFragment = DisplayShotsFragment.newInstance("likesFragment");
+        likesFragment.setSource(Dribbble::downloadLikesShots);
 
-    /**
-     * 初始化TabLayout和ViewPager
-     */
-    private void initTabLayoutAndViewPager(final Toolbar toolbar) {
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        fragmentManager = getSupportFragmentManager();
 
-        List<String> tabTitleList = new ArrayList<>();
-        Resources res = getResources();
-        tabTitleList.add(res.getString(R.string.recent));
-        tabTitleList.add(res.getString(R.string.popular));
-        tabTitleList.add(res.getString(R.string.following));
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.main_frame_layout, homeFragment);
+        fragmentTransaction.commit();
 
-        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(0)));
-        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(1)));
-        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(2)));
-
-        Fragment recentShotsFragment = DisplayShotsFragment.newInstance(new DisplayShotsFragment.Source() {
-
-            @Override
-            Observable<List<Shot>> get(int page) {
-                return Dribbble.downloadShots(page, Dribbble.SHOT_SORT_BY_RECENT);
-            }
-        });
-
-        Fragment popularShotsFragment = DisplayShotsFragment.newInstance(new DisplayShotsFragment.Source() {
-
-            @Override
-            Observable<List<Shot>> get(int page) {
-                return Dribbble.downloadShots(page, Dribbble.SHOT_SORT_BY_VIEWS);
-            }
-        });
-
-        Fragment followingShotsFragment = DisplayShotsFragment.newInstance(new DisplayShotsFragment.Source() {
-
-            @Override
-            Observable<List<Shot>> get(int page) {
-                return Dribbble.downloadFollowingShots(page);
-            }
-        });
-
-        final List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.addAll(Arrays.asList(recentShotsFragment, popularShotsFragment, followingShotsFragment));
-
-        PagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return fragmentList.get(position);
-            }
-
-            @Override
-            public int getCount() {
-                return fragmentList.size();
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position) {
-                return tabTitleList.get(position);
-            }
-        };
-
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-        viewPager.setOffscreenPageLimit(2); // 设置缓存页面数量（实际有3个，缓存2个+正在显示的1个）
-        viewPager.setAdapter(adapter);
-
-        /*
-         * 关联TabLayout与ViewPager
-         * 同时也要覆写PagerAdapter的getPageTitle方法，否则Tab没有title
-         */
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setTabsFromPagerAdapter(adapter);
+    //    initTabLayoutAndViewPager(toolbar);
     }
 
     @Override
@@ -168,13 +103,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
+        if (id == R.id.home) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main_frame_layout, homeFragment);
+            fragmentTransaction.commit();
         } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.my_likes) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main_frame_layout, likesFragment);
+            fragmentTransaction.commit();
+        } else if (id == R.id.my_shots) {
 
         } else if (id == R.id.nav_share) {
 

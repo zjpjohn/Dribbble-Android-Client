@@ -2,6 +2,7 @@ package com.lucas.freeshots;
 
 import com.lucas.freeshots.common.Dribbble;
 import com.lucas.freeshots.model.Comment;
+import com.lucas.freeshots.model.Likes;
 import com.lucas.freeshots.model.Shot;
 
 import java.util.List;
@@ -16,6 +17,10 @@ public interface DribbbleService {
     @Headers(Dribbble.AUTHORIZATION)
     @GET("shots")
     Observable<List<Shot>> listShots(@Query("page") int page, @Query("sort") String sort);
+
+    @Headers(Dribbble.AUTHORIZATION)
+    @GET("user/likes")
+    Observable<List<Likes>> listLikesShots(@Query("page") int page);
 
     @Headers(Dribbble.AUTHORIZATION)
     @GET("user/following/shots")

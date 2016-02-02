@@ -9,7 +9,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,10 +18,9 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.model.Shot;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import timber.log.Timber;
+
+import static com.lucas.freeshots.util.Util.$;
 
 public class ShowShotActivity extends AppCompatActivity {
 
@@ -32,36 +30,36 @@ public class ShowShotActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
-    @Bind(R.id.top_bar) LinearLayout topBar;
-    @Bind(R.id.top_bar_shot_title) TextView topBarShotTitleTv;
+//    @Bind(R.id.top_bar) LinearLayout topBar;
+//    @Bind(R.id.top_bar_shot_title) TextView topBarShotTitleTv;
+//
+//    @Bind(R.id.app_bar) AppBarLayout appBarLayout;
+//    @Bind(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
+//    @Bind(R.id.shot) SimpleDraweeView shotDv;
+//    @Bind(R.id.author_icon) SimpleDraweeView authorIconDv;
+//    @Bind(R.id.shot_title) TextView shotTitleTv;
+//    @Bind(R.id.author_name) TextView authorNameTv;
+//
+//    @Bind(R.id.likes_count) TextView likesCountTv;
+//    @Bind(R.id.comments_count) TextView commentsCountTv;
+//    @Bind(R.id.buckets_count) TextView bucketsCountTv;
+//    @Bind(R.id.views_count) TextView viewsCountTv;
+//
+//    @Bind(R.id.like) ImageView likeIv;
+//    @Bind(R.id.comment) ImageView commentIv;
+//    @Bind(R.id.bucket) ImageView bucketIv;
+//
+//    @Bind(R.id.shot_describe) TextView shotDescribeTv;
+//    @Bind(R.id.label_zone) LinearLayout labelZoneLyout;
 
-    @Bind(R.id.app_bar) AppBarLayout appBarLayout;
-    @Bind(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
-    @Bind(R.id.shot) SimpleDraweeView shotDv;
-    @Bind(R.id.author_icon) SimpleDraweeView authorIconDv;
-    @Bind(R.id.shot_title) TextView shotTitleTv;
-    @Bind(R.id.author_name) TextView authorNameTv;
-
-    @Bind(R.id.likes_count) TextView likesCountTv;
-    @Bind(R.id.comments_count) TextView commentsCountTv;
-    @Bind(R.id.buckets_count) TextView bucketsCountTv;
-    @Bind(R.id.views_count) TextView viewsCountTv;
-
-    @Bind(R.id.like) ImageView likeIv;
-    @Bind(R.id.comment) ImageView commentIv;
-    @Bind(R.id.bucket) ImageView bucketIv;
-
-    @Bind(R.id.shot_describe) TextView shotDescribeTv;
-    @Bind(R.id.label_zone) LinearLayout labelZoneLyout;
-
-    @OnClick(R.id.like)
-    public void clickLike(ImageView likeIv) {
-    }
-
-    @OnClick(R.id.back)
-    public void clickLike(View view) {
-        view.setOnClickListener(v -> finish());
-    }
+//    @OnClick(R.id.like)
+//    public void clickLike(ImageView likeIv) {
+//    }
+//
+//    @OnClick(R.id.back)
+//    public void clickLike(View view) {
+//        view.setOnClickListener(v -> finish());
+//    }
 
     //@BindColor(R.color.cardview_light_background) int cc;///////////////////////////////////////////////////
 
@@ -78,11 +76,31 @@ public class ShowShotActivity extends AppCompatActivity {
 //        toolbar.setNavigationIcon(R.mipmap.abc_ic_action_back);
 //        toolbar.setNavigationOnClickListener(view -> finish());
 
-        ButterKnife.bind(this);
+        LinearLayout topBar = $(this, R.id.top_bar);
+        TextView topBarShotTitleTv = $(this, R.id.top_bar_shot_title);
+
+        AppBarLayout appBarLayout = $(this, R.id.app_bar);
+        CollapsingToolbarLayout toolbarLayout = $(this, R.id.toolbar_layout);
+        SimpleDraweeView shotDv = $(this, R.id.shot);
+        SimpleDraweeView authorIconDv = $(this, R.id.author_icon);
+        TextView shotTitleTv = $(this, R.id.shot_title);
+        TextView authorNameTv = $(this, R.id.author_name);
+
+        TextView likesCountTv = $(this, R.id.likes_count);
+        TextView commentsCountTv = $(this, R.id.comments_count);
+        TextView bucketsCountTv = $(this, R.id.buckets_count);
+        TextView viewsCountTv = $(this, R.id.views_count);
+
+        ImageView likeIv = $(this, R.id.like);
+        ImageView commentIv = $(this, R.id.comment);
+        ImageView bucketIv = $(this, R.id.bucket);
+
+        TextView shotDescribeTv = $(this, R.id.shot_describe);
+        LinearLayout labelZoneLyout = $(this, R.id.label_zone);
 
         Shot shot = (Shot) getIntent().getSerializableExtra("shot");
 
-        toolbarLayout.setTitle(" ");
+                toolbarLayout.setTitle(" ");
         //toolbarLayout.setContentScrim(null);
         //toolbarLayout.setContentScrimColor(cc);
 
@@ -109,7 +127,13 @@ public class ShowShotActivity extends AppCompatActivity {
             }
         });
 
-        shotDv.setImageURI(Uri.parse(shot.images.getHeightImageUri()));
+        if(shot.images != null) {
+            String uri = shot.images.getHeightImageUri();
+            if(uri != null) {
+                shotDv.setImageURI(Uri.parse(uri));
+            }
+        }
+
         shotTitleTv.setText(shot.title + " : " + shot.images.getType() + " : " + shot.width + ", " + shot.height);
         if(shot.description != null) {
             shotDescribeTv.setText(Html.fromHtml(shot.description));

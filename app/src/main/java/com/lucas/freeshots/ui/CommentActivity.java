@@ -30,23 +30,23 @@ import com.lucas.freeshots.model.Shot;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import rx.Subscriber;
 import timber.log.Timber;
+
+import static com.lucas.freeshots.util.Util.$;
 
 public class CommentActivity extends AppCompatActivity {
 
     public static void startMyself(Context context, @NonNull Shot shot) {
         Intent intent = new Intent(context, CommentActivity.class);
-        intent.putExtra("shot", shot);
+        //intent.putExtra("shot", shot);
         context.startActivity(intent);
     }
 
-    @Bind(R.id.refresh_layout) SwipeRefreshLayout refreshLayout;
+    private SwipeRefreshLayout refreshLayout;
 
     private boolean isLoading = false;
-    private List<Comment> comments = new ArrayList<>();;
+    private List<Comment> comments = new ArrayList<>();
     private CommentAdapter adapter;
     private Shot shot;
 
@@ -60,7 +60,7 @@ public class CommentActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.mipmap.abc_ic_action_back);
         toolbar.setNavigationOnClickListener(view -> finish());
 
-        ButterKnife.bind(this);
+        refreshLayout = $(this, R.id.refresh_layout);
 
         shot = (Shot) getIntent().getSerializableExtra("shot");
 
@@ -146,14 +146,17 @@ public class CommentActivity extends AppCompatActivity {
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
-            @Bind(R.id.author_icon) public SimpleDraweeView authorIconDv;
-            @Bind(R.id.author_name) public TextView authorNameTv;
-            @Bind(R.id.comment) public TextView commentTv;
-            @Bind(R.id.updated_time) public TextView updatedTimeTv;
+            public SimpleDraweeView authorIconDv;
+            public TextView authorNameTv;
+            public TextView commentTv;
+            public TextView updatedTimeTv;
 
             public ViewHolder(View v) {
                 super(v);
-                ButterKnife.bind(this, v);
+                authorIconDv = $(v, R.id.author_icon);
+                authorNameTv = $(v, R.id.author_name);
+                commentTv = $(v, R.id.comment);
+                updatedTimeTv = $(v, R.id.updated_time);
             }
         }
     }

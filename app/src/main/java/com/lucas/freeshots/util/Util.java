@@ -8,7 +8,9 @@ import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.support.annotation.IdRes;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -79,6 +81,16 @@ public class Util {
     public static int px2dp(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends View> T $(Activity activity, @IdRes int id){
+        return (T) activity.findViewById(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends View> T $(View v, @IdRes int id){
+        return (T) v.findViewById(id);
     }
 
     public static String getUniqueFileName() {

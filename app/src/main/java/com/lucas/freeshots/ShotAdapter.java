@@ -15,10 +15,10 @@ import com.lucas.freeshots.ui.ShowShotActivity;
 
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import hugo.weaving.DebugLog;
 import timber.log.Timber;
+
+import static com.lucas.freeshots.util.Util.$;
 
 public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
     private static final int VIEW_TYPE_SHOT = 1;
@@ -51,13 +51,13 @@ public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
         }
 
         final Shot shot = shots.get(position);
-        String uriStr = shot.images.teaser;
-        if(uriStr == null) {
-            Timber.e("wwwwwwwwwwwwwwwwwwwwwwwgggggggggggggggggggww");
-            return;
+        if(shot.images != null) {
+            String uriStr = shot.images.teaser;
+            if (uriStr != null) {
+                holder.shotDv.setImageURI(Uri.parse(uriStr));
+            }
         }
 
-        holder.shotDv.setImageURI(Uri.parse(uriStr));
         holder.titleTv.setText(shot.title);
 
         if(shot.user != null) {
@@ -96,21 +96,28 @@ public class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.shot) public SimpleDraweeView shotDv;
-        @Bind(R.id.title) public TextView titleTv;
-        @Bind(R.id.author_icon) public SimpleDraweeView authorIconDv;
-        @Bind(R.id.author_name) public TextView authorNameTv;
-        @Bind(R.id.views_count) public TextView viewsCountTv;
-        @Bind(R.id.comments_count) public TextView commentsCountTv;
-        @Bind(R.id.likes_count) public TextView likesCountTv;
+        public SimpleDraweeView shotDv;
+        public TextView titleTv;
+        public SimpleDraweeView authorIconDv;
+        public TextView authorNameTv;
+        public TextView viewsCountTv;
+        public TextView commentsCountTv;
+        public TextView likesCountTv;
 
         int viewType;
 
         public ViewHolder(View v, int viewType) {
             super(v);
             this.viewType = viewType;
+
             if(viewType == VIEW_TYPE_SHOT) {
-                ButterKnife.bind(this, v);
+                shotDv = $(v, R.id.shot);
+                titleTv = $(v, R.id.title);
+                authorIconDv = $(v, R.id.author_icon);
+                authorNameTv = $(v, R.id.author_name);
+                viewsCountTv = $(v, R.id.views_count);
+                commentsCountTv = $(v, R.id.comments_count);
+                likesCountTv = $(v, R.id.likes_count);
             }
         }
     }

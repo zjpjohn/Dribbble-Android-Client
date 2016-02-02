@@ -3,8 +3,10 @@ package com.lucas.freeshots.common;
 
 import com.lucas.freeshots.DribbbleService;
 import com.lucas.freeshots.model.Comment;
+import com.lucas.freeshots.model.Likes;
 import com.lucas.freeshots.model.Shot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.GsonConverterFactory;
@@ -12,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class Dribbble {
@@ -41,6 +44,22 @@ public class Dribbble {
         return service.listShots(page, sort)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<List<Shot>> downloadLikesShots(int page) {
+        return service.listLikesShots(page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Func1<List<Likes>, List<Shot>>() {
+                    @Override
+                    public List<Shot> call(List<Likes> likes) {
+                        List<Shot> shots = new ArrayList<Shot>();
+                        for(Likes like : likes) {
+                            shots.add(like.shot);
+                        }
+                        return shots;
+                    }
+                });
     }
 
     public static Observable<List<Shot>> downloadFollowingShots(int page) {

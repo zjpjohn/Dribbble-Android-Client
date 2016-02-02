@@ -20,12 +20,12 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         <!--app:tabIndicatorColor="@color/darkorange"-->
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            app:tabIndicatorHeight="3dp"
-            android:background="?attr/colorPrimary" />
+        <!--<android.support.design.widget.TabLayout-->
+            <!--android:id="@+id/tabLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="36dp"-->
+            <!--app:tabIndicatorHeight="3dp"-->
+            <!--android:background="?attr/colorPrimary" />-->
 
     </android.support.design.widget.AppBarLayout>
 

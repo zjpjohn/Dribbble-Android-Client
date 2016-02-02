@@ -2,6 +2,10 @@ package com.lucas.freeshots.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,12 +13,18 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.model.Shot;
 
@@ -30,41 +40,8 @@ public class ShowShotActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
-//    @Bind(R.id.top_bar) LinearLayout topBar;
-//    @Bind(R.id.top_bar_shot_title) TextView topBarShotTitleTv;
-//
-//    @Bind(R.id.app_bar) AppBarLayout appBarLayout;
-//    @Bind(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
-//    @Bind(R.id.shot) SimpleDraweeView shotDv;
-//    @Bind(R.id.author_icon) SimpleDraweeView authorIconDv;
-//    @Bind(R.id.shot_title) TextView shotTitleTv;
-//    @Bind(R.id.author_name) TextView authorNameTv;
-//
-//    @Bind(R.id.likes_count) TextView likesCountTv;
-//    @Bind(R.id.comments_count) TextView commentsCountTv;
-//    @Bind(R.id.buckets_count) TextView bucketsCountTv;
-//    @Bind(R.id.views_count) TextView viewsCountTv;
-//
-//    @Bind(R.id.like) ImageView likeIv;
-//    @Bind(R.id.comment) ImageView commentIv;
-//    @Bind(R.id.bucket) ImageView bucketIv;
-//
-//    @Bind(R.id.shot_describe) TextView shotDescribeTv;
-//    @Bind(R.id.label_zone) LinearLayout labelZoneLyout;
-
-//    @OnClick(R.id.like)
-//    public void clickLike(ImageView likeIv) {
-//    }
-//
-//    @OnClick(R.id.back)
-//    public void clickLike(View view) {
-//        view.setOnClickListener(v -> finish());
-//    }
-
-    //@BindColor(R.color.cardview_light_background) int cc;///////////////////////////////////////////////////
-
-    int topBarHeight;
-    int appBarLayoutHeight;
+    private int topBarHeight;
+    private int appBarLayoutHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +55,9 @@ public class ShowShotActivity extends AppCompatActivity {
 
         LinearLayout topBar = $(this, R.id.top_bar);
         TextView topBarShotTitleTv = $(this, R.id.top_bar_shot_title);
+        View backV = $(this, R.id.back);
+        backV.setOnClickListener(view -> finish());
+        ViewGroup topBarInfoZoneVg = $(this, R.id.top_bar_info_zone);
 
         AppBarLayout appBarLayout = $(this, R.id.app_bar);
         CollapsingToolbarLayout toolbarLayout = $(this, R.id.toolbar_layout);
@@ -100,11 +80,10 @@ public class ShowShotActivity extends AppCompatActivity {
 
         Shot shot = (Shot) getIntent().getSerializableExtra("shot");
 
-                toolbarLayout.setTitle(" ");
+        //        toolbarLayout.setTitle(" ");
+        topBarShotTitleTv.setText(shot.title);
         //toolbarLayout.setContentScrim(null);
         //toolbarLayout.setContentScrimColor(cc);
-
-
 
         topBar.post(() -> {
             topBarHeight = topBar.getHeight();
@@ -115,22 +94,59 @@ public class ShowShotActivity extends AppCompatActivity {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                 Timber.e("verticalOffset:      " + verticalOffset
-                        + "    appBarLayoutHeight:     " + appBarLayoutHeight
+                                + "    appBarLayoutHeight:     " + appBarLayoutHeight
                                 + "  topBarHeight:" + topBarHeight
                 );
 
-                if(verticalOffset != 0 && appBarLayoutHeight + verticalOffset <= topBarHeight) {
-                    Timber.e(shot.title);
-                    topBarShotTitleTv.setText(shot.title);
-                    //topBar.setAlpha((float) 0.1);
+                if(verticalOffset == 0) {
+                    return;
+                }
+
+                topBar.setAlpha(Math.abs(verticalOffset / (float)appBarLayoutHeight));
+
+                int tmp = appBarLayoutHeight + verticalOffset;
+                if (tmp <= topBarHeight) {
+                    topBarInfoZoneVg.setAlpha(1 - Math.abs(tmp / (float)topBarHeight));
+                } else {
+                    topBarInfoZoneVg.setAlpha(0);
                 }
             }
         });
 
+//        Palette palette = Palette.from(new Bitmap()).generate(new Palette.PaletteAsyncListener() {
+//            @Override
+//            public void onGenerated(Palette palette) {
+//                Palette.Swatch vibrant = palette.getVibrantSwatch();
+//                Palette.Swatch darkVibrant = palette.getDarkVibrantSwatch();
+//                vibrant.getBodyTextColor();
+//            }
+//        });
+
+        ControllerListener controllerListener = new BaseControllerListener<ImageInfo>() {
+            @Override
+            public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+                super.onFinalImageSet(id, imageInfo, animatable);
+
+                Timber.e("111111111111111111111111111111111111111111111");
+                Drawable drawable = shotDv.getDrawable();
+                //drawable 是 GenericDraweeHierarchy.RootDrawable;
+
+                if (drawable != null && drawable instanceof BitmapDrawable) {
+                    Timber.e("2222222222222222222222222222222222222222222222");
+                    Bitmap bItmap = ((BitmapDrawable) drawable).getBitmap();
+                }
+            }
+        };
+
         if(shot.images != null) {
             String uri = shot.images.getHeightImageUri();
             if(uri != null) {
-                shotDv.setImageURI(Uri.parse(uri));
+                shotDv.setController(Fresco.newDraweeControllerBuilder()
+                        .setUri(uri)
+                        .setAutoPlayAnimations(true)
+                        .setControllerListener(controllerListener)
+                        .build());
+               // shotDv.getDrawable();
             }
         }
 

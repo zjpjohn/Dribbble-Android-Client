@@ -263,9 +263,10 @@
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/black"
+        android:alpha="0"
+        android:background="@android:color/white"
         android:gravity="center_vertical"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/back"
@@ -274,12 +275,20 @@
             android:paddingLeft="16dp"
             android:src="@mipmap/abc_ic_action_back" />
 
-        <TextView
-            android:id="@+id/top_bar_shot_title"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/top_bar_info_zone"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:text="eeeeeeeeee"/>
+            android:alpha="0"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/top_bar_shot_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="eeeeeeeeee"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

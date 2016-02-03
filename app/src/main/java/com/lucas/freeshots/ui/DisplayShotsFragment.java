@@ -40,8 +40,12 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
 
     }
 
+//    public interface Source {
+//        Observable<List<Shot>> get(int page);
+//    }
+
     public interface Source {
-        Observable<List<Shot>> get(int page);
+        Observable<Shot> get(int page);
     }
 
     /**
@@ -165,49 +169,38 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
         }
     }
 
-    private class ShotsReceivedSubscriber extends Subscriber<List<Shot>> {
+    private class ShotsReceivedSubscriber extends Subscriber<Shot> {
+
+        private void over() {
+            isLoading = false;
+            adapter.setBottomItemVisible(false);
+            if(refreshLayout != null && refreshLayout.isRefreshing()) {
+                refreshLayout.setRefreshing(false);
+            }
+        }
 
         @Override
         public void onCompleted() {
             Timber.e("%s: RecentFragment Completed!", logTag);
             // adapter.notifyItemInserted();
             adapter.notifyDataSetChanged();
-            isLoading = false;
-            adapter.setBottomItemVisible(false);
-            if(refreshLayout != null && refreshLayout.isRefreshing()) {
-                refreshLayout.setRefreshing(false);
-            }
+            over();
         }
 
         @Override
         public void onError(Throwable e) {
-
             // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
-
             Timber.e("%s: listShots Failure: %s", logTag, e.getMessage());
-
             Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
-            isLoading = false;
-            adapter.setBottomItemVisible(false);
-            if(refreshLayout != null && refreshLayout.isRefreshing()) {
-                refreshLayout.setRefreshing(false);
-            }
+            over();
         }
 
         @Override
-        public void onNext(List<Shot> newShots) {
-            Timber.e("%s: FFFFFFFFFFFFFFFFFFFFFF       %d", logTag, newShots.size());
-            if(newShots.size() == 0) {
-                // TODO: 无数据，这时要隐藏底部的"loading more..."
-                return;
+        public void onNext(Shot shot) {
+            Timber.e("get a shot: " + String.valueOf(shot != null)); /////////////////////////////////////////
+            if(!shots.contains(shot)) {
+                shots.add(shot);
             }
-
-            for(Shot shot : newShots) {
-                if(!shots.contains(shot)) {
-                    shots.add(shot);
-                }
-            }
-            //shots.addAll(newShots);
         }
     }
 

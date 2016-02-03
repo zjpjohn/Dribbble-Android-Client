@@ -18,10 +18,23 @@ public interface DribbbleService {
     @GET("shots")
     Observable<List<Shot>> listShots(@Query("page") int page, @Query("sort") String sort);
 
+    /**
+     * 得到当前登录用户的shots
+     */
+    @Headers(Dribbble.AUTHORIZATION)
+    @GET("user/shots")
+    Observable<List<Shot>> listMyShots(@Query("page") int page);
+
+    /**
+     * 得到当前登录用户like的shots
+     */
     @Headers(Dribbble.AUTHORIZATION)
     @GET("user/likes")
     Observable<List<Likes>> listLikesShots(@Query("page") int page);
 
+    /**
+     * 得到当前登录用户following用户的shots
+     */
     @Headers(Dribbble.AUTHORIZATION)
     @GET("user/following/shots")
     Observable<List<Shot>> listFollowingShots(@Query("page") int page);

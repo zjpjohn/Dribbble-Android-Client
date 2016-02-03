@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity
 
     private HomeFragment homeFragment;
     private DisplayShotsFragment likesFragment;
+    private DisplayShotsFragment myShotsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity
         homeFragment = HomeFragment.newInstance();
         likesFragment = DisplayShotsFragment.newInstance("likesFragment");
         likesFragment.setSource(Dribbble::downloadLikesShots);
+
+        myShotsFragment = DisplayShotsFragment.newInstance("myShotsFragment");
+        myShotsFragment.setSource(Dribbble::downloadMyShots);
 
         fragmentManager = getSupportFragmentManager();
 
@@ -107,18 +111,16 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.main_frame_layout, homeFragment);
             fragmentTransaction.commit();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.my_buckets) {
 
         } else if (id == R.id.my_likes) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.main_frame_layout, likesFragment);
             fragmentTransaction.commit();
         } else if (id == R.id.my_shots) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main_frame_layout, myShotsFragment);
+            fragmentTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

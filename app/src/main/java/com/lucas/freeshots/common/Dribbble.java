@@ -6,7 +6,6 @@ import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Likes;
 import com.lucas.freeshots.model.Shot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.GsonConverterFactory;
@@ -40,32 +39,49 @@ public class Dribbble {
         service = retrofit.create(DribbbleService.class);
     }
 
-    public static Observable<List<Shot>> downloadShots(int page, String sort) {
-        return service.listShots(page, sort)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    private static Observable.Transformer<List<Shot>, Shot> shotListToShotTransformer = new Observable.Transformer<List<Shot>, Shot>() {
+        @Override
+        public Observable<Shot> call(Observable<List<Shot>> observable) {
+            return observable
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .flatMap(new Func1<List<Shot>, Observable<Shot>>() {
+                        @Override
+                        public Observable<Shot> call(List<Shot> shots) {
+                            return Observable.from(shots);
+                        }
+                    });
+        }
+    };
+
+    public static Observable<Shot> downloadShots(int page, String sort) {
+        return service.listShots(page, sort).compose(shotListToShotTransformer);
     }
 
-    public static Observable<List<Shot>> downloadLikesShots(int page) {
+    public static Observable<Shot> downloadMyShots(int page) {
+        return service.listMyShots(page).compose(shotListToShotTransformer);
+    }
+
+    public static Observable<Shot> downloadLikesShots(int page) {
         return service.listLikesShots(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<List<Likes>, List<Shot>>() {
+                .flatMap(new Func1<List<Likes>, Observable<Likes>>() {
                     @Override
-                    public List<Shot> call(List<Likes> likes) {
-                        List<Shot> shots = new ArrayList<Shot>();
-                        for(Likes like : likes) {
-                            shots.add(like.shot);
-                        }
-                        return shots;
+                    public Observable<Likes> call(List<Likes> shots) {
+                        return Observable.from(shots);
+                    }
+                })
+                .map(new Func1<Likes, Shot>() {
+                    @Override
+                    public Shot call(Likes likes) {
+                        return likes.shot;
                     }
                 });
     }
 
-    public static Observable<List<Shot>> downloadFollowingShots(int page) {
-        return service.listFollowingShots(page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    public static Observable<Shot> downloadFollowingShots(int page) {
+        return service.listFollowingShots(page).compose(shotListToShotTransformer);
     }
 
     /**

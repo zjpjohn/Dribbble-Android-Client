@@ -2,7 +2,9 @@ package com.lucas.freeshots.ui;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -13,10 +15,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.lucas.freeshots.R;
-import com.lucas.freeshots.ShotAdapter;
 import com.lucas.freeshots.model.Shot;
 import com.lucas.freeshots.util.Util;
 
@@ -24,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import hugo.weaving.DebugLog;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
@@ -135,7 +139,6 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
         });
     }
 
-    //private static final int INVALID_PAGE = 0;
     private int currPage = 0;
 
     /**
@@ -144,6 +147,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
     private void loadFirstPage() {
         if(source != null && !isLoading) {
             isLoading = true;
+            adapter.setBottomItemVisible(true);
             shots.clear();
             currPage = 1;
             source.get(currPage).subscribe(new ShotsReceivedSubscriber());
@@ -156,6 +160,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
     private void loadNextPage() {
         if(source != null && !isLoading) {
             isLoading = true;
+            adapter.setBottomItemVisible(true);
             source.get(++currPage).subscribe(new ShotsReceivedSubscriber());
         }
     }
@@ -168,7 +173,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
             // adapter.notifyItemInserted();
             adapter.notifyDataSetChanged();
             isLoading = false;
-            //loadingMore.setVisibility(View.GONE);
+            adapter.setBottomItemVisible(false);
             if(refreshLayout != null && refreshLayout.isRefreshing()) {
                 refreshLayout.setRefreshing(false);
             }
@@ -180,9 +185,10 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
             // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
 
             Timber.e("%s: listShots Failure: %s", logTag, e.getMessage());
+
             Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
             isLoading = false;
-            //loadingMore.setVisibility(View.GONE);
+            adapter.setBottomItemVisible(false);
             if(refreshLayout != null && refreshLayout.isRefreshing()) {
                 refreshLayout.setRefreshing(false);
             }
@@ -216,6 +222,117 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
             super.getItemOffsets(outRect, view, parent, state);
             outRect.set(spacing / 2, spacing / 2, spacing / 2, spacing / 2);
+        }
+    }
+
+    private static class ShotAdapter extends RecyclerView.Adapter<ShotAdapter.ViewHolder> {
+        private static final int VIEW_TYPE_SHOT = 1;
+        private static final int VIEW_TYPE_BOTTOM = 2;
+
+        private List<Shot> shots;
+        private boolean bottomItemVisible = false;
+
+        public ShotAdapter(@NonNull List<Shot> shots) {
+            this.shots = shots;
+        }
+
+        /**
+         * 设置“loading more”item的显隐。
+         * @param visible: true 显示，false 隐藏。
+         */
+        public void setBottomItemVisible(boolean visible) {
+            bottomItemVisible = visible;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = null;
+            if (viewType == VIEW_TYPE_SHOT) {
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.shot, parent, false);
+            } else if (viewType == VIEW_TYPE_BOTTOM) {
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_loading_more, parent, false);
+            } else {
+                Timber.e("Unknown viewType: %d", viewType);
+            }
+
+            return new ViewHolder(v, viewType);
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, int position) {
+            if (isBottomView(position)) {
+                return;
+            }
+
+            final Shot shot = shots.get(position);
+            if (shot.images != null) {
+                String uriStr = shot.images.teaser;
+                if (uriStr != null) {
+                    holder.shotDv.setImageURI(Uri.parse(uriStr));
+                }
+            }
+
+            holder.titleTv.setText(shot.title);
+
+            if (shot.user != null) {
+                if (shot.user.avatar_url != null) {
+                    holder.authorIconDv.setImageURI(Uri.parse(shot.user.avatar_url));
+                }
+                holder.authorNameTv.setText(shot.user.name);
+            }
+
+            holder.viewsCountTv.setText(String.valueOf(shot.views_count));
+            holder.commentsCountTv.setText(String.valueOf(shot.comments_count));
+            holder.likesCountTv.setText(String.valueOf(shot.likes_count));
+
+            holder.itemView.setOnClickListener(v -> ShowShotActivity.startMyself(holder.itemView.getContext(), shot));
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return bottomItemVisible
+                    ? (position == getItemCount() - 1 ? VIEW_TYPE_BOTTOM : VIEW_TYPE_SHOT)
+                    : VIEW_TYPE_SHOT;
+        }
+
+        @DebugLog
+        @Override
+        public int getItemCount() {
+            int size = shots.size();
+            // 加1为加上Bottom View，shots.size() == 0时没有Bottom View
+            return size == 0 ? 0 : (bottomItemVisible ? size + 1 : size);
+        }
+
+        public boolean isBottomView(int position) {
+            return position == shots.size();
+        }
+
+        public static class ViewHolder extends RecyclerView.ViewHolder {
+            public SimpleDraweeView shotDv;
+            public TextView titleTv;
+            public SimpleDraweeView authorIconDv;
+            public TextView authorNameTv;
+            public TextView viewsCountTv;
+            public TextView commentsCountTv;
+            public TextView likesCountTv;
+
+            int viewType;
+
+            public ViewHolder(View v, int viewType) {
+                super(v);
+                this.viewType = viewType;
+
+                if (viewType == VIEW_TYPE_SHOT) {
+                    shotDv = $(v, R.id.shot);
+                    titleTv = $(v, R.id.title);
+                    authorIconDv = $(v, R.id.author_icon);
+                    authorNameTv = $(v, R.id.author_name);
+                    viewsCountTv = $(v, R.id.views_count);
+                    commentsCountTv = $(v, R.id.comments_count);
+                    likesCountTv = $(v, R.id.likes_count);
+                }
+            }
         }
     }
 }

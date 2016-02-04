@@ -7,6 +7,10 @@ import java.util.List;
 
 import hugo.weaving.DebugLog;
 
+/**
+ * 此类属性的名称要与服务器返回的字段名称一致，
+ * 所以命名不符合Java编程规范。
+ */
 public class Shot implements Serializable {
     public int id;
     public String title;

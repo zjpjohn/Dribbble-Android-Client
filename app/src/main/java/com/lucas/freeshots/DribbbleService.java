@@ -1,6 +1,7 @@
 package com.lucas.freeshots;
 
 import com.lucas.freeshots.common.Dribbble;
+import com.lucas.freeshots.model.Bucket;
 import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Likes;
 import com.lucas.freeshots.model.Shot;
@@ -39,7 +40,18 @@ public interface DribbbleService {
     @GET("user/following/shots")
     Observable<List<Shot>> listFollowingShots(@Query("page") int page);
 
+    /**
+     * 得到当前登录用户的buckets
+     */
+    @Headers(Dribbble.AUTHORIZATION)
+    @GET("user/buckets")
+    Observable<List<Bucket>> listMyBuckets(@Query("page") int page);
+
+    /**
+     * 得到某个shot的comment
+     * @param id shot id
+     */
     @Headers(Dribbble.AUTHORIZATION)
     @GET("shots/{id}/comments")
-    Observable<List<Comment>> getComment(@Path("id") int id);
+    Observable<List<Comment>> getComment(@Path("id") int id, @Query("page") int page);
 }

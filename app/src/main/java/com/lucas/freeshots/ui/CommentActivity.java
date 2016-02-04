@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -39,7 +40,7 @@ public class CommentActivity extends AppCompatActivity {
 
     public static void startMyself(Context context, @NonNull Shot shot) {
         Intent intent = new Intent(context, CommentActivity.class);
-        //intent.putExtra("shot", shot);
+        intent.putExtra("shot", shot);
         context.startActivity(intent);
     }
 
@@ -70,7 +71,24 @@ public class CommentActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new LinearVerticalDividerItemDecoration(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        SwipeRefreshLayout.OnRefreshListener listener = this::refreshComments;
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // 滑到了底部则自动加载下一页shot
+                if (!ViewCompat.canScrollVertically(recyclerView, 1)) {
+                    loadNextPage();
+                }
+            }
+        });
+
+        SwipeRefreshLayout.OnRefreshListener listener = this::loadFirstPage;
         refreshLayout.setOnRefreshListener(listener);
         refreshLayout.post(() -> {
             // 自动加载首页
@@ -79,55 +97,129 @@ public class CommentActivity extends AppCompatActivity {
         });
     }
 
-    private void refreshComments() {
+    private int currPage = 0;
+
+    /**
+     * 加载第一页shots
+     */
+    private void loadFirstPage() {
         if(!isLoading) {
             isLoading = true;
-            Dribbble.downloadComment(shot.id).subscribe(new Subscriber<List<Comment>>() {
-                @Override
-                public void onCompleted() {
-                    Timber.e("CommentActivity Completed!");
-                    adapter.notifyDataSetChanged();
-                    isLoading = false;
-                    if(refreshLayout != null && refreshLayout.isRefreshing()) {
-                        refreshLayout.setRefreshing(false);
-                    }
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Timber.e("listShots Failure: " + e.getMessage());
-                    Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
-                    isLoading = false;
-                    if(refreshLayout != null && refreshLayout.isRefreshing()) {
-                        refreshLayout.setRefreshing(false);
-                    }
-                }
-
-                @Override
-                public void onNext(List<Comment> newComments) {
-                    comments.clear();
-                    comments.addAll(newComments);
-                }
-            });
+            adapter.setBottomItemVisible(true);
+            comments.clear();
+            currPage = 1;
+            Dribbble.downloadComment(shot.id, currPage).subscribe(new CommentsReceivedSubscriber());
+            //source.get(currPage).subscribe(new ShotsReceivedSubscriber());
         }
     }
 
-    static class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
-        private List<Comment> comments;
+    /**
+     * 加载下一页shots
+     */
+    private void loadNextPage() {
+        if(!isLoading) {
+            isLoading = true;
+            adapter.setBottomItemVisible(true);
+            Dribbble.downloadComment(shot.id, ++currPage).subscribe(new CommentsReceivedSubscriber());
+            //source.get(++currPage).subscribe(new ShotsReceivedSubscriber());
+        }
+    }
 
-        public CommentAdapter(@NonNull List<Comment> comments) {
-            this.comments = comments;
+    private class CommentsReceivedSubscriber extends Subscriber<Comment> {
+
+        private void over() {
+            isLoading = false;
+            adapter.setBottomItemVisible(false);
+            if(refreshLayout != null && refreshLayout.isRefreshing()) {
+                refreshLayout.setRefreshing(false);
+            }
+        }
+
+        @Override
+        public void onCompleted() {
+            Timber.e("Completed!");
+            // adapter.notifyItemInserted();
+            adapter.notifyDataSetChanged();
+            over();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
+            Timber.e("Failure: %s", e.getMessage());
+            Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
+            over();
+        }
+
+        @Override
+        public void onNext(Comment comment) {
+            if(!comments.contains(comment)) {
+                comments.add(comment);
+            }
+        }
+    }
+
+//    private void refreshComments() {
+//        if(!isLoading) {
+//            isLoading = true;
+//            Dribbble.downloadComment(shot.id).subscribe(new Subscriber<List<Comment>>() {
+//                        @Override
+//                        public void onCompleted() {
+//                            Timber.e("CommentActivity Completed!");
+//                            adapter.notifyDataSetChanged();
+//                            isLoading = false;
+//                            if (refreshLayout != null && refreshLayout.isRefreshing()) {
+//                                refreshLayout.setRefreshing(false);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onError(Throwable e) {
+//                            Timber.e("listShots Failure: " + e.getMessage());
+//                            Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
+//                            isLoading = false;
+//                            if (refreshLayout != null && refreshLayout.isRefreshing()) {
+//                                refreshLayout.setRefreshing(false);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onNext(List<Comment> newComments) {
+//                            Timber.e("newComments.size(): " + newComments.size());
+//                            comments.clear();
+//                            comments.addAll(newComments);
+//                        }
+//                    });
+//        }
+//    }
+
+    private static class CommentAdapter extends PullUpLoadAdapter<Comment, CommentAdapter.ViewHolder> {
+
+        public CommentAdapter(@NonNull List<Comment> data) {
+            super(data);
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(
-                                    parent.getContext()).inflate(R.layout.comment, parent, false));
+            View v = null;
+            if (viewType == VIEW_TYPE_ITEM) {
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.comment, parent, false);
+            } else if (viewType == VIEW_TYPE_BOTTOM) {
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_loading_more, parent, false);
+            } else {
+                Timber.e("Unknown viewType: %d", viewType);
+            }
+
+            return new ViewHolder(v, viewType);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            Comment comment = comments.get(position);
+            if (isBottomView(position)) {
+                return;
+            }
+
+            Comment comment = data.get(position);
 
             holder.commentTv.setText(Html.fromHtml(comment.body));
             holder.updatedTimeTv.setText(comment.updated_at);
@@ -140,26 +232,76 @@ public class CommentActivity extends AppCompatActivity {
             }
         }
 
-        @Override
-        public int getItemCount() {
-            return comments.size();
-        }
-
         public static class ViewHolder extends RecyclerView.ViewHolder {
             public SimpleDraweeView authorIconDv;
             public TextView authorNameTv;
             public TextView commentTv;
             public TextView updatedTimeTv;
 
-            public ViewHolder(View v) {
+            int viewType;
+
+            public ViewHolder(View v, int viewType) {
                 super(v);
-                authorIconDv = $(v, R.id.author_icon);
-                authorNameTv = $(v, R.id.author_name);
-                commentTv = $(v, R.id.comment);
-                updatedTimeTv = $(v, R.id.updated_time);
+                this.viewType = viewType;
+
+                if (viewType == VIEW_TYPE_ITEM) {
+                    authorIconDv = $(v, R.id.author_icon);
+                    authorNameTv = $(v, R.id.author_name);
+                    commentTv = $(v, R.id.comment);
+                    updatedTimeTv = $(v, R.id.updated_time);
+                }
             }
         }
     }
+
+//    static class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
+//        private List<Comment> comments;
+//
+//        public CommentAdapter(@NonNull List<Comment> comments) {
+//            this.comments = comments;
+//        }
+//
+//        @Override
+//        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//            return new ViewHolder(LayoutInflater.from(
+//                                    parent.getContext()).inflate(R.layout.comment, parent, false));
+//        }
+//
+//        @Override
+//        public void onBindViewHolder(ViewHolder holder, int position) {
+//            Comment comment = comments.get(position);
+//
+//            holder.commentTv.setText(Html.fromHtml(comment.body));
+//            holder.updatedTimeTv.setText(comment.updated_at);
+//
+//            if(comment.user != null) {
+//                if(comment.user.avatar_url != null) {
+//                    holder.authorIconDv.setImageURI(Uri.parse(comment.user.avatar_url));
+//                }
+//                holder.authorNameTv.setText(comment.user.name);
+//            }
+//        }
+//
+//        @Override
+//        public int getItemCount() {
+//            return comments.size();
+//        }
+//
+//        public static class ViewHolder extends RecyclerView.ViewHolder {
+//            public SimpleDraweeView authorIconDv;
+//            public TextView authorNameTv;
+//            public TextView commentTv;
+//            public TextView updatedTimeTv;
+//
+//            public ViewHolder(View v) {
+//                super(v);
+//                authorIconDv = $(v, R.id.author_icon);
+//                authorNameTv = $(v, R.id.author_name);
+//                commentTv = $(v, R.id.comment);
+//                updatedTimeTv = $(v, R.id.updated_time);
+//            }
+//        }
+//    }
 
     private static class LinearVerticalDividerItemDecoration extends RecyclerView.ItemDecoration {
 

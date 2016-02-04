@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity
     private HomeFragment homeFragment;
     private DisplayShotsFragment likesFragment;
     private DisplayShotsFragment myShotsFragment;
+    private BucketsFragment bucketsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity
 
         myShotsFragment = DisplayShotsFragment.newInstance("myShotsFragment");
         myShotsFragment.setSource(Dribbble::downloadMyShots);
+
+        bucketsFragment = BucketsFragment.newInstance();
 
         fragmentManager = getSupportFragmentManager();
 
@@ -112,7 +115,9 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.main_frame_layout, homeFragment);
             fragmentTransaction.commit();
         } else if (id == R.id.my_buckets) {
-
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main_frame_layout, bucketsFragment);
+            fragmentTransaction.commit();
         } else if (id == R.id.my_likes) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.main_frame_layout, likesFragment);

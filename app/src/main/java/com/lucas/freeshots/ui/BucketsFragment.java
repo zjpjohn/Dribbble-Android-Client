@@ -1,9 +1,15 @@
 package com.lucas.freeshots.ui;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,12 +86,14 @@ public class BucketsFragment extends Fragment {
 
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView recyclerView;
+    private FloatingActionButton fab;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_buckets, container, false);
         refreshLayout = $(v, R.id.refresh_layout);
         recyclerView = $(v, R.id.buckets);
+        fab = $(v, R.id.fab);
         return v;
     }
 
@@ -93,13 +102,56 @@ public class BucketsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         activity = getActivity();
 
-        //int spacing = Util.dp2px(activity, 8); // 间隔为8dp
+        // add new bucket
+        fab.setOnClickListener(v -> {
+            View contentView = LayoutInflater.from(activity).inflate(R.layout.alert_dialog_add_bucket, null);
+
+            EditText bucketNameEt = $(contentView, R.id.bucket_name);
+            EditText bucketDescriptionEt = $(contentView, R.id.bucket_description);
+
+            TextView cancelTv = $(contentView, R.id.cancel);
+            TextView createTv = $(contentView, R.id.create);
+
+            AlertDialog dialog = new AlertDialog.Builder(activity)
+                    .setTitle(R.string.create_new_bucket)
+                    .setView(contentView)
+                    .show();
+
+            cancelTv.setOnClickListener(v1 -> dialog.dismiss());
+
+            createTv.setOnClickListener(v1 -> {
+                String name = bucketNameEt.getText().toString().trim();
+                String description = bucketDescriptionEt.getText().toString().trim();
+
+                if(name.isEmpty()) {
+                    Toast.makeText(activity, "bucket name should not empty", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Dribbble.addOneBucket(name, description).subscribe(new Subscriber<Bucket>() {
+                    @Override
+                    public void onCompleted() {
+                        Toast.makeText(activity, "bucket created", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onNext(Bucket bucket) {
+
+                    }
+                });
+            });
+        });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity);
 
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter = new BucketAdapter(buckets));
-        //recyclerView.addItemDecoration(new LinearVerticalDividerItemDecoration(activity));
+        recyclerView.addItemDecoration(new LinearVerticalDividerItemDecoration(activity));
         //recyclerView.setPadding(spacing / 2, spacing / 2, spacing / 2, spacing / 2);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -219,7 +271,9 @@ public class BucketsFragment extends Fragment {
 
             Bucket bucket = data.get(position);
             holder.bucketNameTv.setText(bucket.name != null ? bucket.name : "");
-            holder.shotCountTv.setText(bucket.shots_count + " shots");
+            holder.shotCountTv.setText(String.format("%d  shots", bucket.shots_count));
+
+            holder.itemView.setOnClickListener(v -> DisplayOneBucketActivity.startMyself(v.getContext(), bucket));
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -239,43 +293,36 @@ public class BucketsFragment extends Fragment {
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
+    private static class LinearVerticalDividerItemDecoration extends RecyclerView.ItemDecoration {
 
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
+        private static final int[] ATTRS = new int[]{
+                android.R.attr.listDivider
+        };
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        public void onFragmentInteraction(Uri uri);
-//    }
+        private Drawable divider;
+
+        public LinearVerticalDividerItemDecoration(Context context) {
+            final TypedArray a = context.obtainStyledAttributes(ATTRS);
+            divider = a.getDrawable(0);
+            a.recycle();
+        }
+
+        @Override
+        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            // 画水平分割线线
+            int left = parent.getPaddingLeft();
+            int right = parent.getWidth() - parent.getPaddingRight();
+
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                int top = child.getBottom() + params.bottomMargin;
+                int bottom = top + divider.getIntrinsicHeight();
+                divider.setBounds(left, top, right, bottom);
+                divider.draw(c);
+            }
+        }
+    }
 
 }

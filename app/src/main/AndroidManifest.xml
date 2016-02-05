@@ -21,14 +21,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.ShowShotActivity"
             android:label="@string/title_activity_show_shot"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-        <activity android:name=".ui.CommentActivity"
+
+        <activity
+            android:name=".ui.CommentActivity"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+
+        <activity android:name=".ui.DisplayOneBucketActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+
     </application>
 
 </manifest>

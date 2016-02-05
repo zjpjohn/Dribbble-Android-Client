@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:paddingTop="24dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="5"
+        android:ellipsize="end"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:paddingTop="15dp"
+        android:textColor="@color/colorSecondaryText"
+        android:textSize="14sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginTop="24dp">
+
+        <RelativeLayout
+            android:id="@+id/leftActions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:gravity="center_vertical">
+
+            <!--textColor is red-->
+            <TextView
+                android:id="@+id/actionLeft0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:paddingRight="32dp"
+                android:textColor="#FF0000"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true">
+
+            <TextView
+                android:id="@+id/actionRight2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:paddingRight="32dp"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/actionRight1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/actionRight2"
+                android:ellipsize="end"
+                android:paddingRight="32dp"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/actionRight0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/actionRight1"
+                android:ellipsize="end"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

@@ -1,6 +1,8 @@
 package com.lucas.freeshots.common;
 
 
+import android.support.annotation.NonNull;
+
 import com.lucas.freeshots.DribbbleService;
 import com.lucas.freeshots.model.Bucket;
 import com.lucas.freeshots.model.Comment;
@@ -76,14 +78,6 @@ public class Dribbble {
         }
     }
 
-//    class TTT<List<T>, R> implements Observable.Transformer<List<T>, R> {
-//
-//        @Override
-//        public Observable<R> call(Observable<List<T>> observable) {
-//            return null;
-//        }
-//    }
-
     public static Observable<Shot> downloadShots(int page, String sort) {
         return service.listShots(page, sort).compose(new Transformer<>());
     }
@@ -101,21 +95,6 @@ public class Dribbble {
                         return likes.shot;
                     }
                 });
-//        return service.listLikesShots(page)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .flatMap(new Func1<List<Likes>, Observable<Likes>>() {
-//                    @Override
-//                    public Observable<Likes> call(List<Likes> shots) {
-//                        return Observable.from(shots);
-//                    }
-//                })
-//                .map(new Func1<Likes, Shot>() {
-//                    @Override
-//                    public Shot call(Likes likes) {
-//                        return likes.shot;
-//                    }
-//                });
     }
 
     public static Observable<Shot> downloadFollowingShots(int page) {
@@ -124,6 +103,20 @@ public class Dribbble {
 
     public static Observable<Bucket> downloadMyBuckets(int page) {
         return service.listMyBuckets(page).compose(new Transformer<>());
+    }
+
+    /**
+     * 得到一个bucket中的shots
+     * @param id bucket id
+     */
+    public static Observable<Shot> downloadOneBucketShots(int id, int page) {
+        return service.listOneBucketShots(id, page).compose(new Transformer<>());
+    }
+
+    public static Observable<Bucket> addOneBucket(@NonNull String name, @NonNull String description) {
+        return service.addOneBucket(name, description)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     /**

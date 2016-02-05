@@ -17,4 +17,7 @@
     <string name="my_likes">My likes</string>
     <string name="my_shots">My shots</string>
     <string name="my_buckets">My buckets</string>
+    <string name="create_new_bucket">Create new bucket</string>
+    <string name="cancel">CANCEL</string>
+    <string name="create">CREATE</string>
 </resources>

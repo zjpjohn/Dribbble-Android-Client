@@ -6,9 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="right|center_vertical"
         android:fitsSystemWindows="true"
         tools:context="com.lucas.freeshots.ui.ShowShotActivity">
 
@@ -70,21 +72,23 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin">
+                android:orientation="vertical">
                 <!-- shot title 和 作者信息 -->
                 <LinearLayout
+                    android:id="@+id/title_author_zone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingTop="16dp">
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:background="@android:color/black">
 
                     <com.facebook.drawee.view.SimpleDraweeView
                         android:id="@+id/author_icon"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
                         android:layout_gravity="center_vertical"
+                        android:paddingLeft="16dp"
                         fresco:placeholderImage="@mipmap/ic_launcher"
                         fresco:roundAsCircle="true" />
 
@@ -93,32 +97,41 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:orientation="vertical"
-                        android:paddingLeft="16dp">
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp">
 
                         <TextView
                             android:id="@+id/shot_title"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorPrimaryTextWhite"/>
 
                         <TextView
                             android:id="@+id/author_name"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorSecondaryText"/>
                     </LinearLayout>
                 </LinearLayout>
 
                 <!-- shot 信息统计，like数，comment数，views数等等 -->
                 <LinearLayout
+                    android:id="@+id/shot_info_zone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingTop="16dp">
+                    android:paddingBottom="16dp"
+                    android:paddingTop="16dp"
+                    android:background="@android:color/black">
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:paddingBottom="16dp"
+                        android:paddingLeft="32dp"
+                        android:paddingTop="16dp">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -126,14 +139,15 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@mipmap/ic_info_like" />
 
                             <TextView
                                 android:id="@+id/likes_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/colorPrimaryTextWhite"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp" />
                         </LinearLayout>
@@ -141,27 +155,38 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:paddingTop="16dp">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@mipmap/ic_info_comment" />
 
                             <TextView
                                 android:id="@+id/comments_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/colorPrimaryTextWhite"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp" />
                         </LinearLayout>
                     </LinearLayout>
 
+                    <!-- 分割线 -->
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorSecondaryText" />
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:paddingBottom="16dp"
+                        android:paddingLeft="32dp"
+                        android:paddingTop="16dp">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -169,14 +194,15 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@mipmap/ic_info_bucket" />
 
                             <TextView
                                 android:id="@+id/buckets_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/colorPrimaryTextWhite"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp" />
                         </LinearLayout>
@@ -184,17 +210,19 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:paddingTop="16dp">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@mipmap/ic_launcher" />
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@mipmap/ic_info_view" />
 
                             <TextView
                                 android:id="@+id/views_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/colorPrimaryTextWhite"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp" />
                         </LinearLayout>
@@ -210,61 +238,74 @@
 
                     <ImageView
                         android:id="@+id/like"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_weight="1"
-                        android:src="@mipmap/ic_launcher" />
+                        android:src="@mipmap/ic_action_like_empty" />
 
                     <ImageView
                         android:id="@+id/comment"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_weight="1"
-                        android:src="@mipmap/ic_launcher" />
+                        android:src="@mipmap/ic_action_comment" />
 
                     <ImageView
                         android:id="@+id/bucket"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_weight="1"
-                        android:src="@mipmap/ic_launcher" />
+                        android:src="@mipmap/ic_action_bucket" />
                 </LinearLayout>
 
-                <!-- shot 的描述信息 -->
-                <TextView
-                    android:id="@+id/shot_describe"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="16dp" />
-
-                <!-- 标签区 -->
-                <LinearLayout
-                    android:id="@+id/label_zone"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:paddingLeft="32dp"
+                    android:paddingRight="32dp"
                     android:paddingTop="16dp">
+                    <!-- 分割线 -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/colorSecondaryText" />
 
+                    <!-- shot 的描述信息 -->
+                    <TextView
+                        android:id="@+id/shot_describe"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"/>
+
+                    <!-- 分割线 -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/colorSecondaryText" />
+
+                    <!-- 标签区 -->
+                    <LinearLayout
+                        android:id="@+id/label_zone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingTop="16dp">
+
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
-        <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/fab"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--android:src="@android:drawable/ic_dialog_email"-->
-        <!--app:layout_anchor="@id/app_bar"-->
-        <!--app:layout_anchorGravity="bottom|end" />-->
-
     </android.support.design.widget.CoordinatorLayout>
 
+    <!--android:background="@android:color/white"-->
     <LinearLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:alpha="0"
-        android:background="@android:color/white"
+        android:background="@android:color/black"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -275,20 +316,62 @@
             android:paddingLeft="16dp"
             android:src="@mipmap/abc_ic_action_back" />
 
+        <!-- top bar 中的 shot title 和 作者信息 -->
         <LinearLayout
             android:id="@+id/top_bar_info_zone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
             android:alpha="0"
-            android:orientation="horizontal">
+            android:background="@android:color/black">
 
-            <TextView
-                android:id="@+id/top_bar_shot_title"
-                android:layout_width="wrap_content"
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/top_bar_author_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                fresco:placeholderImage="@mipmap/ic_launcher"
+                fresco:roundAsCircle="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="eeeeeeeeee"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+                <TextView
+                    android:id="@+id/top_bar_shot_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryTextWhite"/>
+
+                <TextView
+                    android:id="@+id/top_bar_author_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorSecondaryText"/>
+            </LinearLayout>
         </LinearLayout>
+
+        <!--<LinearLayout-->
+            <!--android:id="@+id/top_bar_info_zone"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:alpha="0"-->
+            <!--android:paddingLeft="32dp"-->
+            <!--android:orientation="horizontal">-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/top_bar_shot_title"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="@color/colorPrimaryTextWhite"-->
+                <!--android:textSize="16sp" />-->
+        <!--</LinearLayout>-->
     </LinearLayout>
 </FrameLayout>

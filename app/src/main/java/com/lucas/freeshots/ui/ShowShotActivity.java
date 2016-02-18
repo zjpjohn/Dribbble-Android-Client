@@ -26,6 +26,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.model.Shot;
+import com.lucas.freeshots.view.AutoLinefeedLinearLayout;
 
 import timber.log.Timber;
 
@@ -80,7 +81,7 @@ public class ShowShotActivity extends AppCompatActivity {
         ImageView bucketIv = $(this, R.id.bucket);
 
         TextView shotDescribeTv = $(this, R.id.shot_describe);
-        LinearLayout labelZoneLyout = $(this, R.id.label_zone);
+        AutoLinefeedLinearLayout labelZoneLayout = $(this, R.id.label_zone);
 
         Shot shot = (Shot) getIntent().getSerializableExtra("shot");
 
@@ -160,7 +161,7 @@ public class ShowShotActivity extends AppCompatActivity {
 
         shotTitleTv.setText(shot.title + " : " + shot.images.getType() + " : " + shot.width + ", " + shot.height);
 
-        shotDescribeTv.setText(shot.description != null ? Html.fromHtml(shot.description) : "null");
+        shotDescribeTv.setText(shot.description != null ? Html.fromHtml(shot.description).toString().trim() : "null");
 
         likesCountTv.setText(String.format("%d likes", shot.likes_count));
         commentsCountTv.setText(String.format("%d comments", shot.comments_count));
@@ -168,9 +169,11 @@ public class ShowShotActivity extends AppCompatActivity {
         viewsCountTv.setText(String.format("%d views", shot.views_count));
 
         for(String tag : shot.tags) {
+            Timber.e(tag);
             Button b = new Button(this);
             b.setText(tag);
-            labelZoneLyout.addView(b);
+            b.setClickable(false);
+            labelZoneLayout.addView(b);
         }
 
         if(shot.user != null) {

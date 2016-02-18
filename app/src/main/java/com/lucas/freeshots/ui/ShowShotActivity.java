@@ -95,26 +95,15 @@ public class ShowShotActivity extends AppCompatActivity {
             appBarLayoutHeight = appBarLayout.getHeight();
         });
 
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                Timber.e("verticalOffset:      " + verticalOffset
-                                + "    appBarLayoutHeight:     " + appBarLayoutHeight
-                                + "  topBarHeight:" + topBarHeight
-                );
+        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            topBar.setAlpha(Math.abs(verticalOffset / (float) appBarLayoutHeight));
 
-//                if (verticalOffset == 0) {
-//                    return;
-//                }
-
-                topBar.setAlpha(Math.abs(verticalOffset / (float) appBarLayoutHeight));
-
-                int tmp = appBarLayoutHeight + verticalOffset;
-                if (tmp < topBarHeight) {
-                    topBarInfoZoneVg.setAlpha(1 - Math.abs(tmp / (float) topBarHeight));
-                } else {
-                    topBarInfoZoneVg.setAlpha(0);
-                }
+            int tmp = appBarLayoutHeight + verticalOffset;
+            final float threshold = 2 * topBarHeight;
+            if (tmp < threshold) {
+                topBarInfoZoneVg.setAlpha(1 - Math.abs(tmp / threshold));
+            } else {
+                topBarInfoZoneVg.setAlpha(0);
             }
         });
 

@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
-            fresco:placeholderImage="@mipmap/ic_launcher"
+            fresco:placeholderImage="@mipmap/icon_image_default"
+            fresco:failureImage="@mipmap/img_image_error"
             fresco:roundedCornerRadius="4dp"
             fresco:viewAspectRatio="1.33" />
 
@@ -34,7 +35,8 @@
                 android:id="@+id/author_icon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                fresco:placeholderImage="@mipmap/ic_launcher"
+                fresco:placeholderImage="@mipmap/icon_image_default"
+                fresco:failureImage="@mipmap/img_image_error"
                 fresco:roundAsCircle="true" />
 
             <LinearLayout

@@ -3,6 +3,7 @@ package com.lucas.freeshots.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,10 +17,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -64,6 +68,7 @@ public class ShowShotActivity extends AppCompatActivity {
         AppBarLayout appBarLayout = $(this, R.id.app_bar);
         CollapsingToolbarLayout toolbarLayout = $(this, R.id.toolbar_layout);
         SimpleDraweeView shotDv = $(this, R.id.shot);
+        ProgressBar laodingShotPb = $(this, R.id.loadingShot);
 
         View titleAuthorZone = $(this, R.id.title_author_zone);
         SimpleDraweeView authorIconDv = $(this, R.id.author_icon);
@@ -85,10 +90,7 @@ public class ShowShotActivity extends AppCompatActivity {
 
         Shot shot = (Shot) getIntent().getSerializableExtra("shot");
 
-        //        toolbarLayout.setTitle(" ");
         topBarShotTitleTv.setText(shot.title);
-        //toolbarLayout.setContentScrim(null);
-        //toolbarLayout.setContentScrimColor(cc);
 
         topBar.post(() -> {
             topBarHeight = topBar.getHeight();
@@ -112,19 +114,15 @@ public class ShowShotActivity extends AppCompatActivity {
             public void process(Bitmap bitmap) {
                 super.process(bitmap);
 
+                // 提取图片的颜色来改变界面组件的颜色，使风格一致。
                 Palette.from(bitmap).generate(palette -> {
                     Palette.Swatch vibrant = palette.getVibrantSwatch();
-                    Palette.Swatch darkVibrant = palette.getDarkVibrantSwatch();
-                    //vibrant.getBodyTextColor();
-                    if(vibrant != null && darkVibrant != null) {
+                    if(vibrant != null) {
                         int vibrantRgb = vibrant.getRgb();
-                        int darkVibrantRgb = darkVibrant.getRgb();
-
-                        titleAuthorZone.setBackgroundColor(darkVibrantRgb);
+                        titleAuthorZone.setBackgroundColor(vibrantRgb);
                         shotInfoZone.setBackgroundColor(vibrantRgb);
-
-                        topBar.setBackgroundColor(darkVibrantRgb);
-                        topBarInfoZoneVg.setBackgroundColor(darkVibrantRgb);
+                        topBar.setBackgroundColor(vibrantRgb);
+                        topBarInfoZoneVg.setBackgroundColor(vibrantRgb);
                     }
                 });
             }
@@ -139,19 +137,32 @@ public class ShowShotActivity extends AppCompatActivity {
                                     .build();
 
                 shotDv.setController(Fresco.newDraweeControllerBuilder()
-                        //.setUri(uri)
+                        .setControllerListener(new BaseControllerListener<ImageInfo>() {
+                            // 无论下载成功或失败，都隐藏掉 loading ProcessBar
+                            @Override
+                            public void onFinalImageSet(String id, ImageInfo imageInfo,
+                                                        Animatable animatable) {
+                                super.onFinalImageSet(id, imageInfo, animatable);
+                                laodingShotPb.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onFailure(String id, Throwable throwable) {
+                                super.onFailure(id, throwable);
+                                laodingShotPb.setVisibility(View.GONE);
+                            }
+                        })
                         .setAutoPlayAnimations(true)
                         .setOldController(shotDv.getController())
                         .setImageRequest(request)
                         .build());
-               // shotDv.getDrawable();
             }
         }
 
-        shotTitleTv.setText(shot.title + " : " + shot.images.getType() + " : " + shot.width + ", " + shot.height);
-
-        shotDescribeTv.setText(shot.description != null ? Html.fromHtml(shot.description).toString().trim() : "null");
-
+        shotTitleTv.setText(shot.title != null ? shot.title : "null");
+        shotDescribeTv.setText(shot.description != null
+                                ? Html.fromHtml(shot.description).toString().trim()
+                                : "null");
         likesCountTv.setText(String.format("%d likes", shot.likes_count));
         commentsCountTv.setText(String.format("%d comments", shot.comments_count));
         bucketsCountTv.setText(String.format("%d buckets", shot.buckets_count));
@@ -172,23 +183,13 @@ public class ShowShotActivity extends AppCompatActivity {
                 topBarAuthorIconDv.setImageURI(uri);
             }
 
-            String s = String.format("by %s, %s",
-                    String.valueOf(shot.user.name), String.valueOf(shot.user.updated_at));
-            authorNameTv.setText(s);
-            topBarAuthorNameTv.setText(s);
+            String userName = "by " + (shot.user.name != null ? shot.user.name : "null");
+            authorNameTv.setText(userName);
+            topBarAuthorNameTv.setText(userName);
         }
 
         commentIv.setOnClickListener((view) -> {
-            CommentActivity.startMyself(ShowShotActivity.this, shot);
+            CommentActivity.startMyself(this, shot);
         });
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
     }
 }

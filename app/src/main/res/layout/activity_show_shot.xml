@@ -29,37 +29,28 @@
                 app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <!-- 设置宽高比为4:3(fresco:viewAspectRatio="1.33")，因为Dribbble上的图片宽高比为4:3 -->
-                <!-- android:paddingTop="?attr/actionBarSize" -->
-                <com.facebook.drawee.view.SimpleDraweeView
-                    android:id="@+id/shot"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_collapseMode="parallax"
-                    app:layout_collapseParallaxMultiplier="0.7"
-                    fresco:placeholderImage="@mipmap/ic_launcher"
-                    fresco:viewAspectRatio="1.33" />
+                    android:layout_height="wrap_content">
+                    <!-- 设置宽高比为4:3(fresco:viewAspectRatio="1.33")，因为Dribbble上的图片宽高比为4:3 -->
+                    <!-- android:paddingTop="?attr/actionBarSize" -->
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:id="@+id/shot"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/black"
+                        app:layout_collapseMode="parallax"
+                        app:layout_collapseParallaxMultiplier="0.7"
+                        fresco:failureImage="@mipmap/img_image_error"
+                        fresco:viewAspectRatio="1.33" />
 
-                <!--<android.support.v7.widget.Toolbar-->
-                <!--android:id="@+id/toolbar"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="?attr/actionBarSize"-->
-                <!--app:layout_collapseMode="pin"-->
-                <!--app:popupTheme="@style/AppTheme.PopupOverlay" />-->
-                <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="?attr/actionBarSize"-->
-                <!--app:layout_collapseMode="pin"-->
-                <!--android:background="@color/colorPrimary"-->
-                <!--android:alpha="0.5"-->
-                <!--app:popupTheme="@style/AppTheme.PopupOverlay">-->
-
-                <!--<ImageView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:src="@mipmap/abc_ic_action_back"/>-->
-                <!--</LinearLayout>-->
-
+                    <ProgressBar
+                        android:id="@+id/loadingShot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminate="true" />
+                </FrameLayout>
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
 
@@ -89,7 +80,8 @@
                         android:layout_height="64dp"
                         android:layout_gravity="center_vertical"
                         android:paddingLeft="16dp"
-                        fresco:placeholderImage="@mipmap/ic_launcher"
+                        fresco:failureImage="@mipmap/img_image_error"
+                        fresco:placeholderImage="@mipmap/icon_image_default"
                         fresco:roundAsCircle="true" />
 
                     <LinearLayout
@@ -108,9 +100,10 @@
 
                         <TextView
                             android:id="@+id/author_name"
+                            android:paddingTop="4dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/colorSecondaryText" />
+                            android:textColor="@color/colorPrimaryTextWhite" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -119,6 +112,7 @@
                     android:id="@+id/shot_info_zone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:alpha="0.8"
                     android:background="@android:color/black"
                     android:orientation="horizontal"
                     android:paddingBottom="16dp"
@@ -290,17 +284,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingTop="16dp"
-                        android:paddingBottom="16dp">
+                        android:paddingBottom="16dp"
+                        android:paddingTop="16dp">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="#TAG"/>
+                            android:text="#TAG" />
+
                         <com.lucas.freeshots.view.AutoLinefeedLinearLayout
                             android:id="@+id/label_zone"
-                            android:paddingTop="8dp"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:paddingTop="8dp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -341,7 +337,8 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center_vertical"
-                fresco:placeholderImage="@mipmap/ic_launcher"
+                fresco:failureImage="@mipmap/img_image_error"
+                fresco:placeholderImage="@mipmap/icon_image_default"
                 fresco:roundAsCircle="true" />
 
             <LinearLayout
@@ -362,7 +359,7 @@
                     android:id="@+id/top_bar_author_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorSecondaryText" />
+                    android:textColor="@color/colorPrimaryTextWhite" />
             </LinearLayout>
         </LinearLayout>
 

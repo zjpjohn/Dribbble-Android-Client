@@ -126,4 +126,8 @@ public class Dribbble {
     public static Observable<Comment> downloadComment(int id, int page) {
         return service.getComment(id, page).compose(new Transformer<>());
     }
+
+//    public static Call<ResponseBody> checkLikeShot(int id) {
+//        return service.checkLikeShot(id);
+//    }
 }

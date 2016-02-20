@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -28,10 +29,15 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
+import com.lucas.freeshots.Dribbble.DribbbleLikes;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.model.Shot;
 import com.lucas.freeshots.view.AutoLinefeedLinearLayout;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 import static com.lucas.freeshots.util.Util.$;
@@ -46,6 +52,15 @@ public class ShowShotActivity extends AppCompatActivity {
 
     private int topBarHeight;
     private int appBarLayoutHeight;
+
+    private static final int UNKNOWN = 0;
+    private static final int LIKED = 1;
+    private static final int UNLIKED = 2;
+
+    private int isLiked = UNKNOWN; // 是否已经like过了这个shot
+
+    private ImageView likeIv;
+    private ProgressBar likeLoadingPb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +96,8 @@ public class ShowShotActivity extends AppCompatActivity {
         TextView bucketsCountTv = $(this, R.id.buckets_count);
         TextView viewsCountTv = $(this, R.id.views_count);
 
-        ImageView likeIv = $(this, R.id.like);
+        likeIv = $(this, R.id.like);
+        likeLoadingPb = $(this, R.id.likeLoading);
         ImageView commentIv = $(this, R.id.comment);
         ImageView bucketIv = $(this, R.id.bucket);
 
@@ -90,6 +106,7 @@ public class ShowShotActivity extends AppCompatActivity {
 
         Shot shot = (Shot) getIntent().getSerializableExtra("shot");
 
+        checkIfLiked(shot.id);
         topBarShotTitleTv.setText(shot.title);
 
         topBar.post(() -> {
@@ -188,8 +205,132 @@ public class ShowShotActivity extends AppCompatActivity {
             topBarAuthorNameTv.setText(userName);
         }
 
-        commentIv.setOnClickListener((view) -> {
-            CommentActivity.startMyself(this, shot);
+        authorIconDv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
         });
+
+        likeIv.setOnClickListener(v -> {
+            /*
+             * like状态为Unknown时，likeIv不会显示出来，无法点击，
+             * 所以这里只考虑LIKED 和 UNLIKED两种状态。
+             */
+
+            if(isLiked == LIKED) {
+                unLikeShot(shot.id);
+            } else if(isLiked == UNLIKED) {
+                likeShot(shot.id);
+            }
+        });
+
+        commentIv.setOnClickListener((view) -> CommentActivity.startMyself(this, shot));
+    }
+
+    /**
+     * Check if liked a shot
+     * @param shotId 待check的shot id
+     */
+    private void checkIfLiked(int shotId) {
+        likeIv.setVisibility(View.INVISIBLE);
+        likeLoadingPb.setVisibility(View.VISIBLE);
+
+        Call<ResponseBody> call = DribbbleLikes.checkLikeShot(shotId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(retrofit2.Response<ResponseBody> response) {
+                if(response.code() == 200) {
+                    isLiked = LIKED;
+                    likeIv.setVisibility(View.VISIBLE);
+                    likeLoadingPb.setVisibility(View.INVISIBLE);
+                    likeIv.setImageDrawable(getResources().getDrawable(R.mipmap.ic_action_liked));
+                } else if(response.code() == 404) {
+                    isLiked = UNLIKED;
+                    likeIv.setVisibility(View.VISIBLE);
+                    likeLoadingPb.setVisibility(View.INVISIBLE);
+                    likeIv.setImageDrawable(getResources().getDrawable(R.mipmap.ic_action_like_empty));
+                } else {
+                    isLiked = UNKNOWN;
+                    Timber.e("取shot的like状态失败，response.code()：" + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                isLiked = UNKNOWN;
+                Timber.e("取shot的like状态失败，" + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * like a shot
+     * @param shotId shot id
+     */
+    private void likeShot(int shotId) {
+        likeIv.setVisibility(View.INVISIBLE);
+        likeLoadingPb.setVisibility(View.VISIBLE);
+
+        Call<ResponseBody> call = DribbbleLikes.likeShot(shotId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Response<ResponseBody> response) {
+                if(response.code() == 204) {  // success
+                    Timber.i("like success, shot id: " + shotId);
+                    isLiked = LIKED;
+                    likeIv.setVisibility(View.VISIBLE);
+                    likeLoadingPb.setVisibility(View.INVISIBLE);
+                } else {
+                    likeOperationError(String.format("like 失败，shot id: %d, 错误码：%d", shotId, response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                likeOperationError(String.format("like 失败，shot id: %d, %s", shotId, t.getMessage()));
+            }
+        });
+    }
+
+    /**
+     * unLike a shot
+     * @param shotId shot id
+     */
+    private void unLikeShot(int shotId) {
+        likeIv.setVisibility(View.INVISIBLE);
+        likeLoadingPb.setVisibility(View.VISIBLE);
+
+        Call<ResponseBody> call = DribbbleLikes.unlikeShot(shotId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Response<ResponseBody> response) {
+                if(response.code() == 204) { // success
+                    Timber.i("unLike success, shot id: " + shotId);
+                    isLiked = UNLIKED;
+                    likeIv.setVisibility(View.VISIBLE);
+                    likeLoadingPb.setVisibility(View.INVISIBLE);
+                } else {
+                    likeOperationError(String.format("unLike 失败，shot id: %d, 错误码：%d", shotId, response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                likeOperationError(String.format("unLike 失败，shot id: %d, %s", shotId, t.getMessage()));
+            }
+        });
+    }
+
+    /**
+     * like or unlike 操作失败后的处理
+     * @param errStr 错误信息
+     */
+    private void likeOperationError(String errStr) {
+        Timber.e(errStr);
+        Toast.makeText(this, errStr, Toast.LENGTH_LONG).show();
+
+        likeIv.setVisibility(View.VISIBLE);
+        likeLoadingPb.setVisibility(View.INVISIBLE);
     }
 }

@@ -17,6 +17,7 @@ import retrofit2.http.Query;
 import rx.Observable;
 
 public interface DribbbleService {
+
     @Headers(Dribbble.AUTHORIZATION)
     @GET("shots")
     Observable<List<Shot>> listShots(@Query("page") int page, @Query("sort") String sort);
@@ -78,4 +79,26 @@ public interface DribbbleService {
     @Headers(Dribbble.AUTHORIZATION)
     @GET("shots/{id}/comments")
     Observable<List<Comment>> getComment(@Path("id") int id, @Query("page") int page);
+
+
+//    /**
+//     * Check if you like a shot
+//     */
+//    @Headers(Dribbble.AUTHORIZATION)
+//    @GET("shots/{id}/like")
+//    Call<ResponseBody> checkLikeShot(@Path("id") int id);
+//
+//    /**
+//     * Like a shot
+//     */
+//    @Headers(Dribbble.AUTHORIZATION)
+//    @POST("shots/{id}/like")
+//    Call<ResponseBody> likeShot(@Path("id") int id);
+//
+//    /**
+//     * Unlike a shot
+//     */
+//    @Headers(Dribbble.AUTHORIZATION)
+//    @DELETE("shots/{id}/like")
+//    Call<ResponseBody> unlikeShot(@Path("id") int id);
 }

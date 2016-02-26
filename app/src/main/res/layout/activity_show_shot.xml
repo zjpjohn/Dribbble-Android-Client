@@ -240,7 +240,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@mipmap/ic_action_like_empty"
-                            android:visibility="invisible"/>
+                            android:visibility="invisible" />
 
                         <ProgressBar
                             android:id="@+id/likeLoading"
@@ -335,13 +335,11 @@
         <LinearLayout
             android:id="@+id/top_bar_info_zone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:alpha="0"
             android:background="@android:color/black"
             android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingTop="8dp">
+            android:paddingLeft="16dp">
 
             <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/top_bar_author_icon"
@@ -357,8 +355,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:orientation="vertical"
+                android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingRight="16dp"
+                android:paddingTop="8dp">
 
                 <TextView
                     android:id="@+id/top_bar_shot_title"

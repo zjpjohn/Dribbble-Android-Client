@@ -117,11 +117,16 @@ public class ShowShotActivity extends AppCompatActivity {
         appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
             topBar.setAlpha(Math.abs(verticalOffset / (float) appBarLayoutHeight));
 
-            int tmp = appBarLayoutHeight + verticalOffset;
-            final float threshold = 2 * topBarHeight;
+            int tmp = appBarLayoutHeight + verticalOffset;  // 距顶部的距离
+            final float threshold = 2.5f * topBarHeight;
             if (tmp < threshold) {
-                topBarInfoZoneVg.setAlpha(1 - Math.abs(tmp / threshold));
-            } else {
+                float ratio = Math.abs(tmp / threshold);
+                int paddingTop = (int) (ratio * topBarHeight);
+                topBarInfoZoneVg.setAlpha(1 - ratio);
+
+                topBarInfoZoneVg.setPadding(topBarInfoZoneVg.getPaddingLeft(), paddingTop,
+                                            topBarInfoZoneVg.getPaddingRight(), -paddingTop);
+            } else if(topBarInfoZoneVg.getAlpha() != 0) {
                 topBarInfoZoneVg.setAlpha(0);
             }
         });

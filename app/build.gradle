@@ -4,7 +4,7 @@ apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.lucas.freeshots"
@@ -34,7 +34,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:23.1.0'
     compile 'com.android.support:palette-v7:23.1.0'
     compile 'com.jakewharton.timber:timber:4.1.0'
-    compile 'com.facebook.fresco:fresco:0.8.1+'
+    compile 'com.facebook.fresco:fresco:0.8.1'
     compile 'com.google.dagger:dagger:2.0'
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'

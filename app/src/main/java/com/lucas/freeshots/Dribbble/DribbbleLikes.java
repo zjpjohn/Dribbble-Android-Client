@@ -11,6 +11,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public class DribbbleLikes {
 
@@ -28,7 +29,7 @@ public class DribbbleLikes {
     }
 
     public static Call<ResponseBody> likeShot(int id) {
-        return service.likeShot(id);
+        return service.likeShot(id, Dribbble.getAccessToken());
     }
 
     public static Call<ResponseBody> unlikeShot(int id) {
@@ -48,7 +49,7 @@ public class DribbbleLikes {
          */
         @Headers(Dribbble.AUTHORIZATION)
         @POST("shots/{id}/like")
-        Call<ResponseBody> likeShot(@Path("id") int id);
+        Call<ResponseBody> likeShot(@Path("id") int id, @Query("access_token") String accessToken);
 
         /**
          * Unlike a shot

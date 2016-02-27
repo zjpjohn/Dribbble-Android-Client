@@ -37,6 +37,19 @@
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
 
+        <activity android:name=".DribbbleLoginActivity"
+            android:exported="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <data
+                    android:host="dribbble-auth-callback"
+                    android:scheme="freeshots" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

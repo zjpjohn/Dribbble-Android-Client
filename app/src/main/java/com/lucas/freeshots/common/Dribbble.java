@@ -4,6 +4,7 @@ package com.lucas.freeshots.common;
 import android.support.annotation.NonNull;
 
 import com.lucas.freeshots.DribbbleService;
+import com.lucas.freeshots.model.AccessToken;
 import com.lucas.freeshots.model.Bucket;
 import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Likes;
@@ -23,8 +24,24 @@ public class Dribbble {
 
     public static final String API_ADDRESS = "https://api.dribbble.com/v1/";
 
+    public static final String CLIENT_ID
+            = "3b1997c2649543412229bc2ed1321748be9c2a57ab0d0b4f55510bcb7437d363";
+    public static final String CLIENT_SECRET
+            = "9dca070bad796da3e2a983a39a7a5eb2165806e461852881808aa5b36e121c7f";
+
     public static final String AUTHORIZATION
             = "Authorization: Bearer 25fbfa9133a464b3ee7edc444abf3ecb4137d3f4b9834c0f342b1f8685cf07cd";
+
+    private static String authorization
+            = "25fbfa9133a464b3ee7edc444abf3ecb4137d3f4b9834c0f342b1f8685cf07cd";
+
+    public static void setAccessToken(AccessToken token) {
+        authorization = token.access_token;
+    }
+
+    public static String getAccessToken() {
+        return authorization;
+    }
 
     // GET /shots的排序依据
     public static final String SHOT_SORT_BY_COMMENTS = "comments";

@@ -1,5 +1,7 @@
 package com.lucas.freeshots.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -11,11 +13,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Dribbble;
 
 import java.io.Serializable;
+
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Serializable {
@@ -45,14 +51,7 @@ public class MainActivity extends AppCompatActivity
 
         //FrameLayout mainFrameLayout = Util.$(this, R.id.main_frame_layout);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        initDrawer(toolbar);
 
         homeFragment = HomeFragment.newInstance();
         likesFragment = DisplayShotsFragment.newInstance("likesFragment");
@@ -70,6 +69,68 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
 
     //    initTabLayoutAndViewPager(toolbar);
+    }
+
+    /**
+     * 初始化左侧的抽屉
+     */
+    private void initDrawer(Toolbar toolbar) {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View navHeader = View.inflate(this, R.layout.nav_header_main, null);
+//        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+//        params.height = Util.dp2px(this, 180);
+//        navHeader.setLayoutParams(params);
+        navigationView.addHeaderView(navHeader);
+
+        ImageView userIconIv = (ImageView) navHeader.findViewById(R.id.user_icon);
+
+
+        //String LOGIN_CALLBACK = "dribbble-auth-callback";
+//        String loginUrl = "https://dribbble.com/oauth/authorize?client_id="
+//                + Dribbble.CLIENT_ID
+//                + "&redirect_uri=freeshots%3A%2F%2Fdribbble-auth-callback"
+//                + "&scope=public+write;" ;
+//                //+comment+upload";
+
+        String loginUrl = String.format("https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s",
+                                Dribbble.CLIENT_ID,
+                                "freeshots://dribbble-auth-callback",
+                                "public");  // +write+comment+upload
+
+        Timber.e(loginUrl);
+
+        userIconIv.setOnClickListener(v -> {
+
+            Timber.e("ffffffffffffffffffffffffffffff");
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
+            //DribbbleLoginActivity.startMyself(this);
+
+//            Call<ResponseBody> call = DribbbleOAuth.authorize();
+//            call.enqueue(new Callback<ResponseBody>() {
+//                @Override
+//                public void onResponse(Response<ResponseBody> response) {
+//                    Timber.e(response.message());
+//                    try {
+//                        Timber.e(response.body().string());
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Throwable t) {
+//                    Timber.e(t.getMessage());
+//                }
+//            });
+        });
     }
 
     @Override

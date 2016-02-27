@@ -23,8 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.lucas.freeshots.Dribbble.DribbbleComment;
 import com.lucas.freeshots.R;
-import com.lucas.freeshots.common.Dribbble;
 import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Shot;
 
@@ -108,7 +108,7 @@ public class CommentActivity extends AppCompatActivity {
             adapter.setBottomItemVisible(true);
             comments.clear();
             currPage = 1;
-            Dribbble.downloadComment(shot.id, currPage).subscribe(new CommentsReceivedSubscriber());
+            DribbbleComment.getComment(shot.id, currPage).subscribe(new CommentsReceivedSubscriber());
             //source.get(currPage).subscribe(new ShotsReceivedSubscriber());
         }
     }
@@ -120,7 +120,7 @@ public class CommentActivity extends AppCompatActivity {
         if(!isLoading) {
             isLoading = true;
             adapter.setBottomItemVisible(true);
-            Dribbble.downloadComment(shot.id, ++currPage).subscribe(new CommentsReceivedSubscriber());
+            DribbbleComment.getComment(shot.id, ++currPage).subscribe(new CommentsReceivedSubscriber());
             //source.get(++currPage).subscribe(new ShotsReceivedSubscriber());
         }
     }

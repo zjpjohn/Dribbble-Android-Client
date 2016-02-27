@@ -12,8 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lucas.freeshots.Dribbble.DribbbleShot;
 import com.lucas.freeshots.R;
-import com.lucas.freeshots.common.Dribbble;
+import com.lucas.freeshots.Dribbble.Dribbble;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -90,13 +91,13 @@ public class HomeFragment extends Fragment implements Serializable {
         tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(2)));
 
         DisplayShotsFragment recentShotsFragment = DisplayShotsFragment.newInstance("recentShotsFragment");
-        recentShotsFragment.setSource((page) -> Dribbble.downloadShots(page, Dribbble.SHOT_SORT_BY_RECENT));
+        recentShotsFragment.setSource((page) -> DribbbleShot.getShots(page, Dribbble.SHOT_SORT_BY_RECENT));
 
         DisplayShotsFragment popularShotsFragment = DisplayShotsFragment.newInstance("popularShotsFragment");
-        popularShotsFragment.setSource((page) -> Dribbble.downloadShots(page, Dribbble.SHOT_SORT_BY_VIEWS));
+        popularShotsFragment.setSource((page) -> DribbbleShot.getShots(page, Dribbble.SHOT_SORT_BY_VIEWS));
 
         DisplayShotsFragment followingShotsFragment = DisplayShotsFragment.newInstance("followingShotsFragment");
-        followingShotsFragment.setSource(Dribbble::downloadFollowingShots);
+        followingShotsFragment.setSource(DribbbleShot::getFollowingShots);
 
         final List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.addAll(Arrays.asList(recentShotsFragment, popularShotsFragment, followingShotsFragment));

@@ -22,8 +22,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lucas.freeshots.Dribbble.DribbbleBucket;
 import com.lucas.freeshots.R;
-import com.lucas.freeshots.common.Dribbble;
 import com.lucas.freeshots.model.Bucket;
 
 import java.util.ArrayList;
@@ -128,7 +128,7 @@ public class BucketsFragment extends Fragment {
                     return;
                 }
 
-                Dribbble.addOneBucket(name, description).subscribe(new Subscriber<Bucket>() {
+                DribbbleBucket.addOneBucket(name, description).subscribe(new Subscriber<Bucket>() {
                     @Override
                     public void onCompleted() {
                         Toast.makeText(activity, "bucket created", Toast.LENGTH_LONG).show();
@@ -193,7 +193,7 @@ public class BucketsFragment extends Fragment {
             buckets.clear();
             currPage = 1;
             //source.get(currPage).subscribe(new BucketsReceivedSubscriber());
-            Dribbble.downloadMyBuckets(currPage).subscribe(new BucketsReceivedSubscriber());
+            DribbbleBucket.getMyBuckets(currPage).subscribe(new BucketsReceivedSubscriber());
         }
     }
 
@@ -205,7 +205,7 @@ public class BucketsFragment extends Fragment {
             isLoading = true;
             adapter.setBottomItemVisible(true);
             //source.get(++currPage).subscribe(new BucketsReceivedSubscriber());
-            Dribbble.downloadMyBuckets(++currPage).subscribe(new BucketsReceivedSubscriber());
+            DribbbleBucket.getMyBuckets(++currPage).subscribe(new BucketsReceivedSubscriber());
         }
     }
 

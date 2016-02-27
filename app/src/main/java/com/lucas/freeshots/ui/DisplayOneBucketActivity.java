@@ -9,8 +9,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.lucas.freeshots.Dribbble.DribbbleBucket;
 import com.lucas.freeshots.R;
-import com.lucas.freeshots.common.Dribbble;
 import com.lucas.freeshots.model.Bucket;
 
 public class DisplayOneBucketActivity extends AppCompatActivity {
@@ -40,7 +40,7 @@ public class DisplayOneBucketActivity extends AppCompatActivity {
         toolbar.setSubtitle(String.format("%d shots", bucket.shots_count));
 
         DisplayShotsFragment fragment = DisplayShotsFragment.newInstance("DisplayOneBucketActivity");
-        fragment.setSource(page -> Dribbble.downloadOneBucketShots(bucket.id, page));
+        fragment.setSource(page -> DribbbleBucket.getOneBucketShots(bucket.id, page));
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();

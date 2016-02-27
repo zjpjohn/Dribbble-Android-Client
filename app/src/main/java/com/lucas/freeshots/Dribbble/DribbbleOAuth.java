@@ -1,7 +1,6 @@
 package com.lucas.freeshots.Dribbble;
 
 
-import com.lucas.freeshots.common.Dribbble;
 import com.lucas.freeshots.model.AccessToken;
 
 import retrofit2.GsonConverterFactory;
@@ -39,18 +38,4 @@ public class DribbbleOAuth {
                                                  @Query("code") String code,
                                                  @Query("redirect_uri") String redirectUri);
     }
-
-
-//    public static Call<ResponseBody> getAccessToken(String code) {
-//        return service.getAccessToken(Dribbble.CLIENT_ID, Dribbble.CLIENT_SECRET, code, "");
-//    }
-//
-//    private interface Service {
-//        @POST("https://dribbble.com/oauth/token")
-//        Call<ResponseBody> getAccessToken(@Query("client_id") String clientId,
-//                                           @Query("client_secret") String clientSecret,
-//                                           @Query("code") String code,
-//                                           @Query("redirect_uri") String redirectUri);
-//    }
-
 }

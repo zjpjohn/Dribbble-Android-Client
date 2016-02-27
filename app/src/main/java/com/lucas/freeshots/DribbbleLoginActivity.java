@@ -29,7 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lucas.freeshots.Dribbble.DribbbleOAuth;
-import com.lucas.freeshots.common.Dribbble;
+import com.lucas.freeshots.Dribbble.Dribbble;
 import com.lucas.freeshots.model.AccessToken;
 
 import rx.Subscriber;

@@ -16,8 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.lucas.freeshots.Dribbble.Dribbble;
+import com.lucas.freeshots.Dribbble.DribbbleShot;
 import com.lucas.freeshots.R;
-import com.lucas.freeshots.common.Dribbble;
 
 import java.io.Serializable;
 
@@ -54,16 +55,16 @@ public class MainActivity extends AppCompatActivity
         initDrawer(toolbar);
 
         homeFragment = HomeFragment.newInstance();
+
         likesFragment = DisplayShotsFragment.newInstance("likesFragment");
-        likesFragment.setSource(Dribbble::downloadLikesShots);
+        likesFragment.setSource(DribbbleShot::getLikesShots);
 
         myShotsFragment = DisplayShotsFragment.newInstance("myShotsFragment");
-        myShotsFragment.setSource(Dribbble::downloadMyShots);
+        myShotsFragment.setSource(DribbbleShot::getMyShots);
 
         bucketsFragment = BucketsFragment.newInstance();
 
         fragmentManager = getSupportFragmentManager();
-
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_frame_layout, homeFragment);
         fragmentTransaction.commit();

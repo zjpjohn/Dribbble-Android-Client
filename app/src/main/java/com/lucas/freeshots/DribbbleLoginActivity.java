@@ -83,10 +83,10 @@ public class DribbbleLoginActivity extends Activity {
         //finishAfterTransition();
     }
 
-    @Override
-    public void onBackPressed() {
-        dismiss(null);
-    }
+//    @Override
+//    public void onBackPressed() {
+//        dismiss(null);
+//    }
 
     private void showLoading() {
         //TransitionManager.beginDelayedTransition(container);
@@ -113,10 +113,10 @@ public class DribbbleLoginActivity extends Activity {
 
         Uri uri = intent.getData();
         if(uri != null) {
-            Timber.e("uri: " + uri.toString());
+            Timber.i("uri: " + uri.toString());
             String code = uri.getQueryParameter("code");
             if(code != null) {
-                Timber.e("code: " + code);
+                Timber.i("code: " + code);
                 getAccessToken(code);
             } else {
                 Timber.e("code == null");
@@ -145,7 +145,7 @@ public class DribbbleLoginActivity extends Activity {
             @Override
             public void onNext(AccessToken accessToken) {
                 Timber.e("New Access Token: " + accessToken.toString());
-                Dribbble.setAccessToken(accessToken);
+                Dribbble.setAccessTokenStr(accessToken.access_token);
             }
         });
 

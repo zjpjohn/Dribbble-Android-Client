@@ -15,8 +15,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.lucas.freeshots.R;
@@ -38,10 +38,6 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
     public DisplayShotsFragment() {
 
     }
-
-//    public interface Source {
-//        Observable<List<Shot>> get(int page);
-//    }
 
     public interface Source {
         Observable<Shot> get(int page);
@@ -68,6 +64,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
         this.source = source;
     }
 
+    private LinearLayout downLoadErrorLayout;
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView recyclerView;
 
@@ -82,6 +79,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_display_shots, container, false);
+        downLoadErrorLayout = $(v, R.id.download_error_layout);
         refreshLayout = $(v, R.id.refresh_layout);
         recyclerView = $(v, R.id.shots);
         return v;
@@ -140,6 +138,14 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
             listener.onRefresh();
             refreshLayout.setRefreshing(true);
         });
+
+        downLoadErrorLayout.setOnClickListener(v -> {
+            // 下载失败，点击加载首页
+            listener.onRefresh();
+            refreshLayout.setRefreshing(true);
+            downLoadErrorLayout.setVisibility(View.GONE);
+            refreshLayout.setVisibility(View.VISIBLE);
+        });
     }
 
     private int currPage = 0;
@@ -188,9 +194,9 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
 
         @Override
         public void onError(Throwable e) {
-            // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
             Timber.e("%s: listShots Failure: %s", logTag, e.getMessage());
-            Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
+            downLoadErrorLayout.setVisibility(View.VISIBLE);
+            refreshLayout.setVisibility(View.GONE);
             over();
         }
 

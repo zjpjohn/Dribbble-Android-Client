@@ -29,7 +29,7 @@ public class DribbbleLikes {
     }
 
     public static Call<ResponseBody> likeShot(int id) {
-        return service.likeShot(id, Dribbble.getAccessToken());
+        return service.likeShot(id, Dribbble.getAccessTokenStr());
     }
 
     public static Call<ResponseBody> unlikeShot(int id) {
@@ -47,7 +47,7 @@ public class DribbbleLikes {
         /**
          * Like a shot
          */
-        @Headers(Dribbble.AUTHORIZATION)
+        //@Headers(Dribbble.AUTHORIZATION)
         @POST("shots/{id}/like")
         Call<ResponseBody> likeShot(@Path("id") int id, @Query("access_token") String accessToken);
 

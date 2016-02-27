@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity
                                 "freeshots://dribbble-auth-callback",
                                 "public");  // +write+comment+upload
 
-        Timber.e(loginUrl);
+        Timber.i(loginUrl);
 
         userIconIv.setOnClickListener(v -> {
 

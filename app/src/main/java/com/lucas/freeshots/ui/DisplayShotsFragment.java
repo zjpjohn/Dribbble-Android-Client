@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -255,6 +256,12 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
                 if (uriStr != null) {
                     holder.shotDv.setImageURI(Uri.parse(uriStr));
                 }
+
+                if (shot.images.getType().equalsIgnoreCase("gif")) {
+                    holder.signGifIv.setVisibility(View.VISIBLE);
+                } else {
+                    holder.signGifIv.setVisibility(View.INVISIBLE);
+                }
             }
 
             holder.titleTv.setText(shot.title);
@@ -275,6 +282,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
             public SimpleDraweeView shotDv;
+            public ImageView signGifIv;
             public TextView titleTv;
             public SimpleDraweeView authorIconDv;
             public TextView authorNameTv;
@@ -290,6 +298,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
 
                 if (viewType == VIEW_TYPE_ITEM) {
                     shotDv = $(v, R.id.shot);
+                    signGifIv = $(v, R.id.sign_gif);
                     titleTv = $(v, R.id.title);
                     authorIconDv = $(v, R.id.author_icon);
                     authorNameTv = $(v, R.id.author_name);

@@ -6,115 +6,131 @@
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <!-- 设置宽高比为4:3(fresco:viewAspectRatio="1.33")，因为Dribbble上的图片宽高比为4:3 -->
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/shot"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
-            fresco:placeholderImage="@mipmap/icon_image_default"
-            fresco:failureImage="@mipmap/img_image_error"
-            fresco:roundedCornerRadius="4dp"
-            fresco:viewAspectRatio="1.33" />
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
+            <!-- 设置宽高比为4:3(fresco:viewAspectRatio="1.33")，因为Dribbble上的图片宽高比为4:3 -->
             <com.facebook.drawee.view.SimpleDraweeView
-                android:id="@+id/author_icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                fresco:placeholderImage="@mipmap/icon_image_default"
+                android:id="@+id/shot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 fresco:failureImage="@mipmap/img_image_error"
-                fresco:roundAsCircle="true" />
+                fresco:placeholderImage="@mipmap/icon_image_default"
+                fresco:roundedCornerRadius="4dp"
+                fresco:viewAspectRatio="1.33" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="8dp"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:paddingBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp">
 
-                <TextView
-                    android:id="@+id/title"
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/author_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    fresco:failureImage="@mipmap/img_image_error"
+                    fresco:placeholderImage="@mipmap/icon_image_default"
+                    fresco:roundAsCircle="true" />
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:textColor="@color/colorPrimaryText"
-                    android:textSize="16sp" />
+                    android:orientation="vertical"
+                    android:paddingLeft="8dp">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/author_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:paddingTop="8dp"
+                        android:singleLine="true"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingBottom="16dp"
+                android:paddingRight="16dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/ic_info_view" />
 
                 <TextView
-                    android:id="@+id/author_name"
+                    android:id="@+id/views_count"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:paddingTop="8dp"
-                    android:singleLine="true"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="12sp" />
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:paddingLeft="4dp" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:paddingLeft="6dp"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/ic_info_comment" />
+
+                <TextView
+                    android:id="@+id/comments_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:paddingLeft="6dp" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:paddingLeft="4dp"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/ic_info_like" />
+
+                <TextView
+                    android:id="@+id/likes_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:paddingLeft="4dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal"
-            android:paddingBottom="16dp"
-            android:paddingRight="16dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:scaleType="fitXY"
-                android:src="@mipmap/ic_info_view" />
-
-            <TextView
-                android:id="@+id/views_count"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:gravity="center"
-                android:paddingLeft="4dp"/>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:paddingLeft="6dp"
-                android:scaleType="fitXY"
-                android:src="@mipmap/ic_info_comment" />
-
-            <TextView
-                android:id="@+id/comments_count"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:gravity="center"
-                android:paddingLeft="6dp"/>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:paddingLeft="4dp"
-                android:scaleType="fitXY"
-                android:src="@mipmap/ic_info_like" />
-
-            <TextView
-                android:id="@+id/likes_count"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:gravity="center"
-                android:paddingLeft="4dp"/>
-        </LinearLayout>
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/sign_gif"
+            android:layout_width="54dp"
+            android:layout_height="32dp"
+            android:layout_gravity="right|top"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:src="@mipmap/ic_sign_gif"
+            android:visibility="invisible"
+            android:contentDescription="sign gif"/>
+    </FrameLayout>
 </android.support.v7.widget.CardView>

@@ -1,6 +1,8 @@
 package com.lucas.freeshots.model;
 
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +70,7 @@ public class Shot implements Serializable {
 
     //    @Override
 //    public String toString() {
-//        // TODO: 项目太多了，写不过来，可否用反射的方法做？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
+//        // TODO: 项目太多了，写不过来，可否用反射的方法做？？？？？？？
 //        String s =  String.format("{\n" +
 //                "id : %d,\n" +
 //                "title : %s,\n" +
@@ -90,7 +92,7 @@ public class Shot implements Serializable {
         }
 
         @DebugLog
-        public String getType() {
+        public @NonNull String getType() {
             String name = getHeightImageUri();
 
             if(name != null) {

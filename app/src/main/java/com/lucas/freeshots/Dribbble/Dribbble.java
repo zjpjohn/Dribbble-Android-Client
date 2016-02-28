@@ -13,10 +13,10 @@ public class Dribbble {
     public static final String API_ADDRESS = "https://api.dribbble.com/v1/";
 
     public static final String CLIENT_ID
-            = "3b1997c2649543412229bc2ed1321748be9c2a57ab0d0b4f55510bcb7437d363";
+            = "2e560b1af2d6522626e6ba9d0941ea32bc775be3ca2727ceb919647ce6a086bc";
 
     public static final String CLIENT_SECRET
-            = "9dca070bad796da3e2a983a39a7a5eb2165806e461852881808aa5b36e121c74";
+            = "7aeb68a381ee2733d069533b0e0a04dc029433306539baa34936abfc84e4e894";
 
     /*
      * An unguessable random string.
@@ -27,7 +27,7 @@ public class Dribbble {
     public static final String REDIRECT_URI = "freeshots://dribbble-auth-callback";
 
     private static String accessToken
-            = "25fbfa9133a464b3ee7edc444abf3ecb4137d3f4b9834c0f342b1f8685cf07cd";
+            = "d9708bc12e937cae8fbb4ad0939855646cda963571e710304d9e19b1ea6dd537";
 
     public static synchronized void setAccessTokenStr(String newAccessToken) {
         accessToken = newAccessToken;

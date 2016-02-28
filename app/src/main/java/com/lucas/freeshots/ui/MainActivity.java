@@ -22,8 +22,6 @@ import com.lucas.freeshots.R;
 
 import java.io.Serializable;
 
-import timber.log.Timber;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Serializable {
 
@@ -96,35 +94,12 @@ public class MainActivity extends AppCompatActivity
         String loginUrl = String.format("https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
                                 Dribbble.CLIENT_ID,
                                 Dribbble.REDIRECT_URI,
-                                "write",  // public+write+comment+upload
+                                "public+write+comment+upload",  // public+write+comment+upload
                                 Dribbble.STATE);
 
-        Timber.i(loginUrl);
-
         userIconIv.setOnClickListener(v -> {
-
-            Timber.e("ffffffffffffffffffffffffffffff");
             // 打开浏览器
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
-            //DribbbleLoginActivity.startMyself(this);
-
-//            Call<ResponseBody> call = DribbbleOAuth.authorize();
-//            call.enqueue(new Callback<ResponseBody>() {
-//                @Override
-//                public void onResponse(Response<ResponseBody> response) {
-//                    Timber.e(response.message());
-//                    try {
-//                        Timber.e(response.body().string());
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Throwable t) {
-//                    Timber.e(t.getMessage());
-//                }
-//            });
         });
     }
 

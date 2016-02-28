@@ -191,7 +191,6 @@ public class ShowShotActivity extends AppCompatActivity {
         viewsCountTv.setText(String.format("%d views", shot.views_count));
 
         for(String tag : shot.tags) {
-            Timber.e(tag);
             Button b = new Button(this);
             b.setText(tag);
             b.setClickable(false);
@@ -281,10 +280,11 @@ public class ShowShotActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Response<ResponseBody> response) {
-                if(response.code() == 204) {  // success
+                if(response.code() == 201) {  // success
                     Timber.i("like success, shot id: " + shotId);
                     isLiked = LIKED;
                     likeIv.setVisibility(View.VISIBLE);
+                    likeIv.setImageDrawable(getResources().getDrawable(R.mipmap.ic_action_liked));
                     likeLoadingPb.setVisibility(View.INVISIBLE);
                 } else {
                     likeOperationError(String.format("like 失败，shot id: %d, 错误码：%d", shotId, response.code()));
@@ -314,6 +314,7 @@ public class ShowShotActivity extends AppCompatActivity {
                     Timber.i("unLike success, shot id: " + shotId);
                     isLiked = UNLIKED;
                     likeIv.setVisibility(View.VISIBLE);
+                    likeIv.setImageDrawable(getResources().getDrawable(R.mipmap.ic_action_like_empty));
                     likeLoadingPb.setVisibility(View.INVISIBLE);
                 } else {
                     likeOperationError(String.format("unLike 失败，shot id: %d, 错误码：%d", shotId, response.code()));

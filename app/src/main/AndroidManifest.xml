@@ -21,30 +21,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.ShowShotActivity"
             android:label="@string/title_activity_show_shot"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-
         <activity
             android:name=".ui.CommentActivity"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-
-        <activity android:name=".ui.DisplayOneBucketActivity"
+        <activity
+            android:name=".ui.DisplayOneBucketActivity"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-
-        <activity android:name=".DribbbleLoginActivity"
+        <activity
+            android:name=".ui.DribbbleLoginActivity"
             android:exported="true"
-            android:launchMode="singleTop" >
+            android:theme="@style/NoActionBarTranslucent" >
             <intent-filter>
                 <data
                     android:host="dribbble-auth-callback"
                     android:scheme="freeshots" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>

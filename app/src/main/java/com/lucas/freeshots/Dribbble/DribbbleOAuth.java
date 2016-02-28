@@ -26,7 +26,7 @@ public class DribbbleOAuth {
     }
 
     public static Observable<AccessToken> getAccessToken(String code) {
-        return service.getAccessToken(Dribbble.CLIENT_ID, Dribbble.CLIENT_SECRET, code, "")
+        return service.getAccessToken(Dribbble.CLIENT_ID, Dribbble.CLIENT_SECRET, code, Dribbble.REDIRECT_URI)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -34,8 +34,8 @@ public class DribbbleOAuth {
     private interface Service {
         @POST("https://dribbble.com/oauth/token")
         Observable<AccessToken> getAccessToken(@Query("client_id") String clientId,
-                                                 @Query("client_secret") String clientSecret,
-                                                 @Query("code") String code,
-                                                 @Query("redirect_uri") String redirectUri);
+                                             @Query("client_secret") String clientSecret,
+                                             @Query("code") String code,
+                                             @Query("redirect_uri") String redirectUri);
     }
 }

@@ -93,24 +93,18 @@ public class MainActivity extends AppCompatActivity
 
         ImageView userIconIv = (ImageView) navHeader.findViewById(R.id.user_icon);
 
-
-        //String LOGIN_CALLBACK = "dribbble-auth-callback";
-//        String loginUrl = "https://dribbble.com/oauth/authorize?client_id="
-//                + Dribbble.CLIENT_ID
-//                + "&redirect_uri=freeshots%3A%2F%2Fdribbble-auth-callback"
-//                + "&scope=public+write;" ;
-//                //+comment+upload";
-
-        String loginUrl = String.format("https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s",
+        String loginUrl = String.format("https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
                                 Dribbble.CLIENT_ID,
-                                "freeshots://dribbble-auth-callback",
-                                "public");  // +write+comment+upload
+                                Dribbble.REDIRECT_URI,
+                                "write",  // public+write+comment+upload
+                                Dribbble.STATE);
 
         Timber.i(loginUrl);
 
         userIconIv.setOnClickListener(v -> {
 
             Timber.e("ffffffffffffffffffffffffffffff");
+            // 打开浏览器
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
             //DribbbleLoginActivity.startMyself(this);
 

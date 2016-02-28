@@ -16,10 +16,15 @@ public class Dribbble {
             = "3b1997c2649543412229bc2ed1321748be9c2a57ab0d0b4f55510bcb7437d363";
 
     public static final String CLIENT_SECRET
-            = "9dca070bad796da3e2a983a39a7a5eb2165806e461852881808aa5b36e121c7f";
+            = "9dca070bad796da3e2a983a39a7a5eb2165806e461852881808aa5b36e121c74";
 
-    public static final String AUTHORIZATION
-            = "Authorization: Bearer 25fbfa9133a464b3ee7edc444abf3ecb4137d3f4b9834c0f342b1f8685cf07cd";
+    /*
+     * An unguessable random string.
+     * It is used to protect against cross-site request forgery attacks.
+     */
+    public static final String STATE = new StringBuilder(CLIENT_SECRET).reverse().toString();
+
+    public static final String REDIRECT_URI = "freeshots://dribbble-auth-callback";
 
     private static String accessToken
             = "25fbfa9133a464b3ee7edc444abf3ecb4137d3f4b9834c0f342b1f8685cf07cd";
@@ -38,7 +43,6 @@ public class Dribbble {
     public static final String SHOT_SORT_BY_VIEWS = "views";
 
     /**
-     *
      * @param <T> 持有R类型的List
      * @param <R>
      */

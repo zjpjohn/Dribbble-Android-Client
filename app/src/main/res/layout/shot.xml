@@ -71,6 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:orientation="horizontal"
+            android:gravity="center_horizontal"
             android:paddingBottom="16dp"
             android:paddingRight="16dp">
 
@@ -78,38 +79,41 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_shot_views" />
+                android:src="@mipmap/ic_info_view" />
 
             <TextView
                 android:id="@+id/views_count"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="center"
                 android:paddingLeft="4dp"/>
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:paddingLeft="4dp"
+                android:paddingLeft="6dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_info_comment" />
 
             <TextView
                 android:id="@+id/comments_count"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="4dp"/>
+                android:layout_height="20dp"
+                android:gravity="center"
+                android:paddingLeft="6dp"/>
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:paddingLeft="4dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_shot_liked" />
+                android:src="@mipmap/ic_info_like" />
 
             <TextView
                 android:id="@+id/likes_count"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="center"
                 android:paddingLeft="4dp"/>
         </LinearLayout>
     </LinearLayout>

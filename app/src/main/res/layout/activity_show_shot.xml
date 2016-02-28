@@ -364,12 +364,14 @@
                     android:id="@+id/top_bar_shot_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:textColor="@color/colorPrimaryTextWhite" />
 
                 <TextView
                     android:id="@+id/top_bar_author_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:textColor="@color/colorPrimaryTextWhite" />
             </LinearLayout>
         </LinearLayout>

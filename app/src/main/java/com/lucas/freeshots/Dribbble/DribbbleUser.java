@@ -3,20 +3,18 @@ package com.lucas.freeshots.Dribbble;
 
 import android.support.annotation.Nullable;
 
-import com.lucas.freeshots.model.Comment;
-
-import java.util.List;
+import com.lucas.freeshots.model.User;
 
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
-public class DribbbleComment {
-
+public class DribbbleUser {
     private static Service service;
 
     static {
@@ -28,22 +26,20 @@ public class DribbbleComment {
         service = retrofit.create(Service.class);
     }
 
-    /**
-     * 得到某个shot的comment
-     * @param id 要下载Comment的Shot的id
-     */
-    public static @Nullable Observable<Comment> getComment(int id, int page) {
+    public static @Nullable Observable<User> getAuthenticatedUser() {
         String accessTokenStr = Dribbble.getAccessTokenStr();
         return accessTokenStr.isEmpty()
                 ? null
-                : service.getComment(id, accessTokenStr, page)
-                .compose(new Dribbble.Transformer<>());
+                : service.getAuthenticatedUser(accessTokenStr)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
     }
 
     private interface Service {
-        @GET("shots/{id}/comments")
-        Observable<List<Comment>> getComment(@Path("id") int id,
-                                             @Query("access_token") String accessToken,
-                                             @Query("page") int page);
+        /**
+         * Get the authenticated user
+         */
+        @GET("user")
+        Observable<User> getAuthenticatedUser(@Query("access_token") String accessToken);
     }
 }

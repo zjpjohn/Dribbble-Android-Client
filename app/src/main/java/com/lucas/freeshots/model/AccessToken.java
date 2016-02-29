@@ -30,7 +30,6 @@ public class AccessToken implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("access_token=%s, token_type=%s, scope=%s",
-                                access_token, token_type, scope);
+        return String.format("access_token=%s, token_type=%s, scope=%s", access_token, token_type, scope);
     }
 }

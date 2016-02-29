@@ -1,6 +1,8 @@
 package com.lucas.freeshots.Dribbble;
 
 
+import android.support.annotation.Nullable;
+
 import com.lucas.freeshots.model.Likes;
 import com.lucas.freeshots.model.Shot;
 
@@ -27,30 +29,57 @@ public class DribbbleShot {
         service = retrofit.create(Service.class);
     }
 
+    /**
+     * 取公共shots，没有登录也可以取，所以直接就用 Token READONLY_ACCESS_TOKEN 取了。
+     * @param page
+     * @param sort
+     * @return
+     */
     public static Observable<Shot> getShots(int page, String sort) {
-        return service.getShots(Dribbble.getAccessTokenStr(), page, sort)
-                .compose(new Dribbble.Transformer<>());
+        return service.getShots(Dribbble.READONLY_ACCESS_TOKEN, page, sort).compose(new Dribbble.Transformer<>());
     }
 
-    public static Observable<Shot> getMyShots(int page) {
-        return service.getMyShots(Dribbble.getAccessTokenStr(), page)
-                .compose(new Dribbble.Transformer<>());
+    /**
+     * 取当前登录用户的shots
+     * @param page
+     * @return Observable<Shot> or null（没有登录）
+     */
+    public static @Nullable Observable<Shot> getMyShots(int page) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty()
+                ? null
+                : service.getMyShots(accessTokenStr, page).compose(new Dribbble.Transformer<>());
     }
 
-    public static Observable<Shot> getLikesShots(int page) {
-        return service.getLikesShots(Dribbble.getAccessTokenStr(), page)
-                .compose(new Dribbble.Transformer<List<Likes>, Likes>())
-                .map(new Func1<Likes, Shot>() {
-                    @Override
-                    public Shot call(Likes likes) {
-                        return likes.shot;
-                    }
-                });
+    /**
+     * 取当前登录用户的liked 的 shots
+     * @param page
+     * @return Observable<Shot> or null（没有登录）
+     */
+    public static @Nullable Observable<Shot> getLikesShots(int page) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty()
+                ? null
+                : service.getLikesShots(accessTokenStr, page)
+                        .compose(new Dribbble.Transformer<List<Likes>, Likes>())
+                        .map(new Func1<Likes, Shot>() {
+                            @Override
+                            public Shot call(Likes likes) {
+                                return likes.shot;
+                            }
+                        });
     }
 
-    public static Observable<Shot> getFollowingShots(int page) {
-        return service.getFollowingShots(Dribbble.getAccessTokenStr(), page)
-                .compose(new Dribbble.Transformer<>());
+    /**
+     * 取当前登录用户following用户的 shots
+     * @param page
+     * @return Observable<Shot> or null（没有登录）
+     */
+    public static @Nullable Observable<Shot> getFollowingShots(int page) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty()
+                ? null
+                : service.getFollowingShots(accessTokenStr, page).compose(new Dribbble.Transformer<>());
     }
 
     private interface Service {
@@ -59,23 +88,14 @@ public class DribbbleShot {
                                         @Query("page") int page,
                                         @Query("sort") String sort);
 
-        /**
-         * 得到当前登录用户的shots
-         */
         @GET("user/shots")
         Observable<List<Shot>> getMyShots(@Query("access_token") String accessToken,
                                           @Query("page") int page);
 
-        /**
-         * 得到当前登录用户like的shots
-         */
         @GET("user/likes")
         Observable<List<Likes>> getLikesShots(@Query("access_token") String accessToken,
                                               @Query("page") int page);
 
-        /**
-         * 得到当前登录用户following用户的shots
-         */
         @GET("user/following/shots")
         Observable<List<Shot>> getFollowingShots(@Query("access_token") String accessToken,
                                                  @Query("page") int page);

@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class User implements Serializable {
     public int id;
     public String name;
+    public String username;
     public String html_url;
     public String avatar_url; // 用户头像
     public String bio;

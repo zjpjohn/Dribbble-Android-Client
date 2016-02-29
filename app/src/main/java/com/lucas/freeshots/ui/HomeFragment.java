@@ -12,13 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lucas.freeshots.Dribbble.Dribbble;
 import com.lucas.freeshots.Dribbble.DribbbleShot;
 import com.lucas.freeshots.R;
-import com.lucas.freeshots.Dribbble.Dribbble;
+import com.lucas.freeshots.common.Common;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.lucas.freeshots.util.Util.$;
@@ -60,8 +60,7 @@ public class HomeFragment extends Fragment implements Serializable {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -79,28 +78,42 @@ public class HomeFragment extends Fragment implements Serializable {
     private void initTabLayoutAndViewPager(Activity activity) {
         List<String> tabTitleList = new ArrayList<>();
         Resources res = getResources();
+
         tabTitleList.add(res.getString(R.string.recent));
         tabTitleList.add(res.getString(R.string.popular));
-        tabTitleList.add(res.getString(R.string.following));
+        if(Common.isLogin()) {
+            tabTitleList.add(res.getString(R.string.following));
+        }
 
         TabLayout tabLayout = $(activity, R.id.tab_layout);
         ViewPager viewPager = $(activity, R.id.view_pager);
 
-        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(0)));
-        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(1)));
-        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(2)));
+        for(int i = 0; i < tabTitleList.size(); i++) {
+            tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(i)));
+        }
+//
+//        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(0)));
+//        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(1)));
+//        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(2)));
+
+        final List<Fragment> fragmentList = new ArrayList<>();
 
         DisplayShotsFragment recentShotsFragment = DisplayShotsFragment.newInstance("recentShotsFragment");
         recentShotsFragment.setSource((page) -> DribbbleShot.getShots(page, Dribbble.SHOT_SORT_BY_RECENT));
+        fragmentList.add(recentShotsFragment);
 
         DisplayShotsFragment popularShotsFragment = DisplayShotsFragment.newInstance("popularShotsFragment");
         popularShotsFragment.setSource((page) -> DribbbleShot.getShots(page, Dribbble.SHOT_SORT_BY_VIEWS));
+        fragmentList.add(popularShotsFragment);
 
-        DisplayShotsFragment followingShotsFragment = DisplayShotsFragment.newInstance("followingShotsFragment");
-        followingShotsFragment.setSource(DribbbleShot::getFollowingShots);
+        if(Common.isLogin()) {
+            DisplayShotsFragment followingShotsFragment = DisplayShotsFragment.newInstance("followingShotsFragment");
+            followingShotsFragment.setSource(DribbbleShot::getFollowingShots);
+            fragmentList.add(followingShotsFragment);
+        }
 
-        final List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.addAll(Arrays.asList(recentShotsFragment, popularShotsFragment, followingShotsFragment));
+
+        //fragmentList.addAll(Arrays.asList(recentShotsFragment, popularShotsFragment, followingShotsFragment));
 
         PagerAdapter adapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override

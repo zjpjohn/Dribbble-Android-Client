@@ -31,6 +31,7 @@ import com.lucas.freeshots.model.Shot;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
 
@@ -108,8 +109,13 @@ public class CommentActivity extends AppCompatActivity {
             adapter.setBottomItemVisible(true);
             comments.clear();
             currPage = 1;
-            DribbbleComment.getComment(shot.id, currPage).subscribe(new CommentsReceivedSubscriber());
-            //source.get(currPage).subscribe(new ShotsReceivedSubscriber());
+
+            Observable<Comment> observable = DribbbleComment.getComment(shot.id, currPage);
+            if(observable != null) {
+                observable.subscribe(new CommentsReceivedSubscriber());
+            } else {
+                // TODO:
+            }
         }
     }
 
@@ -120,8 +126,13 @@ public class CommentActivity extends AppCompatActivity {
         if(!isLoading) {
             isLoading = true;
             adapter.setBottomItemVisible(true);
-            DribbbleComment.getComment(shot.id, ++currPage).subscribe(new CommentsReceivedSubscriber());
-            //source.get(++currPage).subscribe(new ShotsReceivedSubscriber());
+
+            Observable<Comment> observable = DribbbleComment.getComment(shot.id, ++currPage);
+            if(observable != null) {
+                observable.subscribe(new CommentsReceivedSubscriber());
+            } else {
+                // TODO:
+            }
         }
     }
 

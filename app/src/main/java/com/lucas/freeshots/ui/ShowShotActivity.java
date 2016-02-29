@@ -237,10 +237,14 @@ public class ShowShotActivity extends AppCompatActivity {
      * @param shotId 待check的shot id
      */
     private void checkIfLiked(int shotId) {
+        Call<ResponseBody> call = DribbbleLikes.checkLikeShot(shotId);
+        if(call == null) {
+            return;
+        }
+
         likeIv.setVisibility(View.INVISIBLE);
         likeLoadingPb.setVisibility(View.VISIBLE);
 
-        Call<ResponseBody> call = DribbbleLikes.checkLikeShot(shotId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Response<ResponseBody> response) {
@@ -273,10 +277,15 @@ public class ShowShotActivity extends AppCompatActivity {
      * @param shotId shot id
      */
     private void likeShot(int shotId) {
+        Call<ResponseBody> call = DribbbleLikes.likeShot(shotId);
+        if(call == null) {
+            Toast.makeText(this, "没有登录，不能like", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         likeIv.setVisibility(View.INVISIBLE);
         likeLoadingPb.setVisibility(View.VISIBLE);
 
-        Call<ResponseBody> call = DribbbleLikes.likeShot(shotId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Response<ResponseBody> response) {
@@ -303,10 +312,15 @@ public class ShowShotActivity extends AppCompatActivity {
      * @param shotId shot id
      */
     private void unLikeShot(int shotId) {
+        Call<ResponseBody> call = DribbbleLikes.unlikeShot(shotId);
+        if(call == null) {
+            Toast.makeText(this, "没有登录，不能unLike", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         likeIv.setVisibility(View.INVISIBLE);
         likeLoadingPb.setVisibility(View.VISIBLE);
 
-        Call<ResponseBody> call = DribbbleLikes.unlikeShot(shotId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Response<ResponseBody> response) {

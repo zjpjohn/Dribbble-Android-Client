@@ -41,7 +41,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
     }
 
     public interface Source {
-        Observable<Shot> get(int page);
+        @Nullable Observable<Shot> get(int page);
     }
 
     /**
@@ -160,7 +160,13 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
             adapter.setBottomItemVisible(true);
             shots.clear();
             currPage = 1;
-            source.get(currPage).subscribe(new ShotsReceivedSubscriber());
+
+            Observable<Shot> observable = source.get(currPage);
+            if(observable != null) {
+                observable.subscribe(new ShotsReceivedSubscriber());
+            } else {
+                // TODO:
+            }
         }
     }
 
@@ -171,7 +177,13 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
         if(source != null && !isLoading) {
             isLoading = true;
             adapter.setBottomItemVisible(true);
-            source.get(++currPage).subscribe(new ShotsReceivedSubscriber());
+
+            Observable<Shot> observable = source.get(++currPage);
+            if(observable != null) {
+                observable.subscribe(new ShotsReceivedSubscriber());
+            } else {
+                // TODO:
+            }
         }
     }
 

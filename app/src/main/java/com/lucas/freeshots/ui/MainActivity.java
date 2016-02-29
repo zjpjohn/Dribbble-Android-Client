@@ -1,6 +1,9 @@
 package com.lucas.freeshots.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -14,13 +17,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.lucas.freeshots.Dribbble.Dribbble;
 import com.lucas.freeshots.Dribbble.DribbbleShot;
+import com.lucas.freeshots.Dribbble.DribbbleUser;
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.common.Common;
+import com.lucas.freeshots.model.User;
 
 import java.io.Serializable;
+
+import rx.Observable;
+import rx.Subscriber;
+import timber.log.Timber;
+
+import static com.lucas.freeshots.util.Util.$;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Serializable {
@@ -32,6 +46,87 @@ public class MainActivity extends AppCompatActivity
     private DisplayShotsFragment myShotsFragment;
     private BucketsFragment bucketsFragment;
 
+    private SimpleDraweeView userIconIv;
+    private TextView nameTv;
+    private TextView userNameTv;
+
+    private LoginBroadcastReceiver loginBroadcastReceiver = null;
+
+    private class LoginBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            onLogin();
+        }
+    }
+
+    /**
+     * 更新已登录用户的信息
+     */
+    private void updateAuthenticatedUserInfo() {
+        Observable<User> observable = DribbbleUser.getAuthenticatedUser();
+        if(observable != null) {
+            observable.subscribe(new Subscriber<User>() {
+                @Override
+                public void onCompleted() {
+                    Timber.e("login success");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Timber.e("login error. " + e.getMessage());
+                }
+
+                @Override
+                public void onNext(User user) {
+                    if(user.avatar_url != null) {
+                        userIconIv.setImageURI(Uri.parse(user.avatar_url));
+                    }
+
+                    nameTv.setText(user.name);
+                    userNameTv.setText(user.username);
+                }
+            });
+        }
+    }
+
+    /**
+     * 重置用户信息
+     */
+    private void resetUserInfo() {
+        userIconIv.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+        nameTv.setText("未登录");
+        userNameTv.setText("未登录");
+    }
+
+    private void onLogin() {
+        homeFragment = HomeFragment.newInstance();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_frame_layout, homeFragment);
+
+        /*
+         * 调用 fragmentTransaction.commit() 会报如下异常
+         * java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState().
+         * 登录过程需要打开浏览器，可能会导致onSaveInstanceState()的调用.
+         * commitAllowingStateLoss() allows the commit to be executed after an activity's state is saved.
+         */
+        fragmentTransaction.commitAllowingStateLoss();
+
+        updateAuthenticatedUserInfo();
+    }
+
+    private void onLogOut() {
+        Dribbble.setAccessTokenStr("");
+
+        homeFragment = HomeFragment.newInstance();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_frame_layout, homeFragment);
+        fragmentTransaction.commit();
+
+        resetUserInfo();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,18 +134,16 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
-        //FrameLayout mainFrameLayout = Util.$(this, R.id.main_frame_layout);
-
         initDrawer(toolbar);
+
+        String accessTokenStr = Common.getAccessTokenStrFromSharedPreferences(this);
+        Dribbble.setAccessTokenStr(accessTokenStr);
+        if (!accessTokenStr.isEmpty()) {
+            updateAuthenticatedUserInfo();
+        }
+
+        loginBroadcastReceiver = new LoginBroadcastReceiver();
+        registerReceiver(loginBroadcastReceiver, new IntentFilter(Common.LOGIN_ACTION));
 
         homeFragment = HomeFragment.newInstance();
 
@@ -66,8 +159,6 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_frame_layout, homeFragment);
         fragmentTransaction.commit();
-
-    //    initTabLayoutAndViewPager(toolbar);
     }
 
     /**
@@ -89,17 +180,25 @@ public class MainActivity extends AppCompatActivity
 //        navHeader.setLayoutParams(params);
         navigationView.addHeaderView(navHeader);
 
-        ImageView userIconIv = (ImageView) navHeader.findViewById(R.id.user_icon);
-
-        String loginUrl = String.format("https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
-                                Dribbble.CLIENT_ID,
-                                Dribbble.REDIRECT_URI,
-                                "public+write+comment+upload",  // public+write+comment+upload
-                                Dribbble.STATE);
+        userIconIv = $(navHeader, R.id.user_icon);
+        nameTv = $(navHeader, R.id.name);
+        userNameTv = $(navHeader, R.id.user_name);
 
         userIconIv.setOnClickListener(v -> {
-            // 打开浏览器
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
+            if(Common.isLogin()) {
+                // TODO: 已登录，弹出对话框确认是否登出
+                onLogOut();
+            } else {
+                String loginUrl = String.format(
+                        "https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                        Dribbble.CLIENT_ID,
+                        Dribbble.REDIRECT_URI,
+                        "public+write+comment+upload",
+                        Dribbble.STATE);
+
+                // 未登录，打开浏览器登录
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
+            }
         });
     }
 
@@ -146,21 +245,45 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.main_frame_layout, homeFragment);
             fragmentTransaction.commit();
         } else if (id == R.id.my_buckets) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main_frame_layout, bucketsFragment);
-            fragmentTransaction.commit();
+            if(Common.isLogin()) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_frame_layout, bucketsFragment);
+                fragmentTransaction.commit();
+            } else {
+                // 没有登录，无法打开 my buckets
+                Toast.makeText(this, "没有登录，无法打开 my buckets", Toast.LENGTH_LONG).show();
+            }
         } else if (id == R.id.my_likes) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main_frame_layout, likesFragment);
-            fragmentTransaction.commit();
+            if(Common.isLogin()) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_frame_layout, likesFragment);
+                fragmentTransaction.commit();
+            }else {
+                // 没有登录，无法打开 my likes
+                Toast.makeText(this, "没有登录，无法打开 my likes", Toast.LENGTH_LONG).show();
+            }
         } else if (id == R.id.my_shots) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main_frame_layout, myShotsFragment);
-            fragmentTransaction.commit();
+            if(Common.isLogin()) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_frame_layout, myShotsFragment);
+                fragmentTransaction.commit();
+            } else {
+                // 没有登录，无法打开 my shots
+                Toast.makeText(this, "没有登录，无法打开 my shots", Toast.LENGTH_LONG).show();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(loginBroadcastReceiver != null) {
+            unregisterReceiver(loginBroadcastReceiver);
+        }
+
+        super.onDestroy();
     }
 }

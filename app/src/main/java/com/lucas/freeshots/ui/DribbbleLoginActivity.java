@@ -17,6 +17,7 @@
 package com.lucas.freeshots.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.lucas.freeshots.Dribbble.Dribbble;
 import com.lucas.freeshots.Dribbble.DribbbleOAuth;
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.AccessToken;
 
 import rx.Subscriber;
@@ -48,14 +50,7 @@ public class DribbbleLoginActivity extends Activity {
         // 什么也不干，屏蔽返回按键。
     }
 
-    private void onSuccess(String msg) {
-        Timber.e(msg);
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-        // TODO: 登录成功后取登录用户信息。
-        finish();
-    }
-
-    private void onFailure(String msg) {
+    private void over(String msg) {
         Timber.e(msg);
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
         finish();
@@ -64,7 +59,7 @@ public class DribbbleLoginActivity extends Activity {
     private void onAuthCallback(Intent intent) {
         Uri uri = intent.getData();
         if(uri == null) {
-            onFailure("login failed, don't get uri");
+            over("login failed, don't get uri");
             return;
         }
 
@@ -73,7 +68,7 @@ public class DribbbleLoginActivity extends Activity {
             Timber.e("code: " + code);
             getAccessToken(code);
         } else {
-            onFailure("login failed, don't get code");
+            over("login failed, don't get code");
         }
     }
 
@@ -81,18 +76,25 @@ public class DribbbleLoginActivity extends Activity {
         DribbbleOAuth.getAccessToken(code).subscribe(new Subscriber<AccessToken>() {
             @Override
             public void onCompleted() {
-                onSuccess("login success");
+                Toast.makeText(DribbbleLoginActivity.this, "login success", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(Throwable e) {
-                onFailure("login failed: " + e.getMessage());
+                over("login failed: " + e.getMessage());
             }
 
             @Override
             public void onNext(AccessToken accessToken) {
+                // 登录成功
                 Timber.e("New Access Token: " + accessToken.toString());
+
+                Context context = DribbbleLoginActivity.this;
+                Common.putAccessTokenStrToSharedPreferences(context, accessToken.access_token);
                 Dribbble.setAccessTokenStr(accessToken.access_token);
+
+                context.sendBroadcast(new Intent(Common.LOGIN_ACTION));
+                finish();
             }
         });
     }

@@ -1,6 +1,8 @@
 package com.lucas.freeshots.Dribbble;
 
 
+import android.support.annotation.Nullable;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -21,16 +23,19 @@ public class DribbbleLikes {
         service = retrofit.create(Service.class);
     }
 
-    public static Call<ResponseBody> checkLikeShot(int id) {
-        return service.checkLikeShot(id, Dribbble.getAccessTokenStr());
+    public static @Nullable Call<ResponseBody> checkLikeShot(int id) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty() ? null : service.checkLikeShot(id, accessTokenStr);
     }
 
-    public static Call<ResponseBody> likeShot(int id) {
-        return service.likeShot(id, Dribbble.getAccessTokenStr());
+    public static @Nullable Call<ResponseBody> likeShot(int id) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty() ? null : service.likeShot(id, accessTokenStr);
     }
 
-    public static Call<ResponseBody> unlikeShot(int id) {
-        return service.unlikeShot(id, Dribbble.getAccessTokenStr());
+    public static @Nullable Call<ResponseBody> unlikeShot(int id) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty() ? null : service.unlikeShot(id, accessTokenStr);
     }
 
     private interface Service {

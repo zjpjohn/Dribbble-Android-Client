@@ -18,6 +18,9 @@ public class Dribbble {
     public static final String CLIENT_SECRET
             = "7aeb68a381ee2733d069533b0e0a04dc029433306539baa34936abfc84e4e894";
 
+    public static final String READONLY_ACCESS_TOKEN
+            = "58ec4fa5f75302ac89167d02d2f1ff8227496ce83684992f29d757daefbf6230";
+
     /*
      * An unguessable random string.
      * It is used to protect against cross-site request forgery attacks.
@@ -26,8 +29,7 @@ public class Dribbble {
 
     public static final String REDIRECT_URI = "freeshots://dribbble-auth-callback";
 
-    private static String accessToken
-            = "d9708bc12e937cae8fbb4ad0939855646cda963571e710304d9e19b1ea6dd537";
+    private static String accessToken = "";
 
     public static synchronized void setAccessTokenStr(String newAccessToken) {
         accessToken = newAccessToken;

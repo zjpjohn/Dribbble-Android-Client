@@ -2,6 +2,7 @@ package com.lucas.freeshots.Dribbble;
 
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.lucas.freeshots.model.Bucket;
 import com.lucas.freeshots.model.Shot;
@@ -32,24 +33,33 @@ public class DribbbleBucket {
         service = retrofit.create(Service.class);
     }
 
-    public static Observable<Bucket> getMyBuckets(int page) {
-        return service.getMyBuckets(Dribbble.getAccessTokenStr(), page)
-                .compose(new Dribbble.Transformer<>());
+    public static @Nullable Observable<Bucket> getMyBuckets(int page) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty()
+                ? null
+                : service.getMyBuckets(accessTokenStr, page)
+                        .compose(new Dribbble.Transformer<>());
     }
 
     /**
      * 得到一个bucket中的shots
      * @param id bucket id
      */
-    public static Observable<Shot> getOneBucketShots(int id, int page) {
-        return service.getOneBucketShots(id, Dribbble.getAccessTokenStr(), page)
-                .compose(new Dribbble.Transformer<>());
+    public static @Nullable Observable<Shot> getOneBucketShots(int id, int page) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty()
+                ? null
+                : service.getOneBucketShots(id, accessTokenStr, page)
+                        .compose(new Dribbble.Transformer<>());
     }
 
-    public static Observable<Bucket> addOneBucket(@NonNull String name, @NonNull String description) {
-        return service.addOneBucket(Dribbble.getAccessTokenStr(), name, description)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    public static @Nullable Observable<Bucket> addOneBucket(@NonNull String name, @NonNull String description) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty()
+                ? null
+                : service.addOneBucket(accessTokenStr, name, description)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
     }
 
     private interface Service {

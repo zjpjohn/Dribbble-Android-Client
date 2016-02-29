@@ -29,6 +29,7 @@ import com.lucas.freeshots.model.Bucket;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
 
@@ -128,7 +129,13 @@ public class BucketsFragment extends Fragment {
                     return;
                 }
 
-                DribbbleBucket.addOneBucket(name, description).subscribe(new Subscriber<Bucket>() {
+                Observable<Bucket> observable = DribbbleBucket.addOneBucket(name, description);
+                if(observable == null) {
+                    // TODO:
+                    return;
+                }
+
+                observable.subscribe(new Subscriber<Bucket>() {
                     @Override
                     public void onCompleted() {
                         Toast.makeText(activity, "bucket created", Toast.LENGTH_LONG).show();
@@ -193,7 +200,13 @@ public class BucketsFragment extends Fragment {
             buckets.clear();
             currPage = 1;
             //source.get(currPage).subscribe(new BucketsReceivedSubscriber());
-            DribbbleBucket.getMyBuckets(currPage).subscribe(new BucketsReceivedSubscriber());
+
+            Observable<Bucket> observable = DribbbleBucket.getMyBuckets(currPage);
+            if(observable != null) {
+                observable.subscribe(new BucketsReceivedSubscriber());
+            } else {
+                // TODO:
+            }
         }
     }
 
@@ -205,7 +218,14 @@ public class BucketsFragment extends Fragment {
             isLoading = true;
             adapter.setBottomItemVisible(true);
             //source.get(++currPage).subscribe(new BucketsReceivedSubscriber());
-            DribbbleBucket.getMyBuckets(++currPage).subscribe(new BucketsReceivedSubscriber());
+            //DribbbleBucket.getMyBuckets(++currPage).subscribe(new BucketsReceivedSubscriber());
+
+            Observable<Bucket> observable = DribbbleBucket.getMyBuckets(++currPage);
+            if(observable != null) {
+                observable.subscribe(new BucketsReceivedSubscriber());
+            } else {
+                // TODO:
+            }
         }
     }
 

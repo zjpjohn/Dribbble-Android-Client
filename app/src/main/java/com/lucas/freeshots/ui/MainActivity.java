@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity
     private TextView nameTv;
     private TextView userNameTv;
 
+    private boolean isLoginning = false;  // 是否正在登录中
+
     private LoginBroadcastReceiver loginBroadcastReceiver = null;
 
     private class LoginBroadcastReceiver extends BroadcastReceiver {
@@ -65,29 +67,35 @@ public class MainActivity extends AppCompatActivity
      */
     private void updateAuthenticatedUserInfo() {
         Observable<User> observable = DribbbleUser.getAuthenticatedUser();
-        if(observable != null) {
-            observable.subscribe(new Subscriber<User>() {
-                @Override
-                public void onCompleted() {
-                    Timber.e("login success");
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Timber.e("login error. " + e.getMessage());
-                }
-
-                @Override
-                public void onNext(User user) {
-                    if(user.avatar_url != null) {
-                        userIconIv.setImageURI(Uri.parse(user.avatar_url));
-                    }
-
-                    nameTv.setText(user.name);
-                    userNameTv.setText(user.username);
-                }
-            });
+        if(observable == null) {
+            Timber.e("login error");
+            isLoginning = false;
+            return;
         }
+
+        observable.subscribe(new Subscriber<User>() {
+            @Override
+            public void onCompleted() {
+                Timber.e("login success");
+                isLoginning = false;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.e("login error. " + e.getMessage());
+                isLoginning = false;
+            }
+
+            @Override
+            public void onNext(User user) {
+                if(user.avatar_url != null) {
+                    userIconIv.setImageURI(Uri.parse(user.avatar_url));
+                }
+
+                nameTv.setText(user.name);
+                userNameTv.setText(user.username);
+            }
+        });
     }
 
     /**
@@ -95,10 +103,13 @@ public class MainActivity extends AppCompatActivity
      */
     private void resetUserInfo() {
         userIconIv.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-        nameTv.setText("未登录");
-        userNameTv.setText("未登录");
+        nameTv.setText("未登录，点击登录");
+        userNameTv.setText("未登录，点击登录");
     }
 
+    /**
+     * 响应登录成功
+     */
     private void onLogin() {
         homeFragment = HomeFragment.newInstance();
 
@@ -116,6 +127,9 @@ public class MainActivity extends AppCompatActivity
         updateAuthenticatedUserInfo();
     }
 
+    /**
+     * 响应登出成功
+     */
     private void onLogOut() {
         Dribbble.setAccessTokenStr("");
 
@@ -180,26 +194,34 @@ public class MainActivity extends AppCompatActivity
 //        navHeader.setLayoutParams(params);
         navigationView.addHeaderView(navHeader);
 
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Common.isLogin()) {
+                    // TODO: 已登录，弹出对话框确认是否登出
+                    onLogOut();
+                } else if(!isLoginning){ // 未登录且未在登录中
+                    isLoginning = true;
+                    String loginUrl = String.format(
+                            "https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                            Dribbble.CLIENT_ID,
+                            Dribbble.REDIRECT_URI,
+                            "public+write+comment+upload",
+                            Dribbble.STATE);
+
+                    // 未登录，打开浏览器登录
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
+                }
+            }
+        };
+
         userIconIv = $(navHeader, R.id.user_icon);
         nameTv = $(navHeader, R.id.name);
         userNameTv = $(navHeader, R.id.user_name);
 
-        userIconIv.setOnClickListener(v -> {
-            if(Common.isLogin()) {
-                // TODO: 已登录，弹出对话框确认是否登出
-                onLogOut();
-            } else {
-                String loginUrl = String.format(
-                        "https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
-                        Dribbble.CLIENT_ID,
-                        Dribbble.REDIRECT_URI,
-                        "public+write+comment+upload",
-                        Dribbble.STATE);
-
-                // 未登录，打开浏览器登录
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
-            }
-        });
+        userIconIv.setOnClickListener(listener);
+        nameTv.setOnClickListener(listener);
+        userNameTv.setOnClickListener(listener);
     }
 
     @Override

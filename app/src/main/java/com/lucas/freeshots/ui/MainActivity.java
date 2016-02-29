@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onNext(User user) {
-                if(user.avatar_url != null) {
+                if (user.avatar_url != null) {
                     userIconIv.setImageURI(Uri.parse(user.avatar_url));
                 }
 
@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void onLogOut() {
         Dribbble.setAccessTokenStr("");
+        Common.putAccessTokenStrToSharedPreferences(this, "");
 
         homeFragment = HomeFragment.newInstance();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -154,6 +155,8 @@ public class MainActivity extends AppCompatActivity
         Dribbble.setAccessTokenStr(accessTokenStr);
         if (!accessTokenStr.isEmpty()) {
             updateAuthenticatedUserInfo();
+        } else {
+            resetUserInfo();
         }
 
         loginBroadcastReceiver = new LoginBroadcastReceiver();
@@ -194,24 +197,27 @@ public class MainActivity extends AppCompatActivity
 //        navHeader.setLayoutParams(params);
         navigationView.addHeaderView(navHeader);
 
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(Common.isLogin()) {
-                    // TODO: 已登录，弹出对话框确认是否登出
-                    onLogOut();
-                } else if(!isLoginning){ // 未登录且未在登录中
-                    isLoginning = true;
-                    String loginUrl = String.format(
-                            "https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
-                            Dribbble.CLIENT_ID,
-                            Dribbble.REDIRECT_URI,
-                            "public+write+comment+upload",
-                            Dribbble.STATE);
+        View.OnClickListener listener = v -> {
+            if(Common.isLogin()) {
+                String logout = "LOGOUT";
+                String cancel = "CANCEL";
+                new ShowInfoAlertDialog(this, "退出登录", "确认退出登录？", null,
+                        new String[]{ logout, cancel }, actionName -> {
+                            if(actionName.equals(logout)) {
+                                onLogOut();
+                            }
+                        }).show();
+            } else if(!isLoginning){ // 未登录且未在登录中
+                isLoginning = true;
+                String loginUrl = String.format(
+                        "https://dribbble.com/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                        Dribbble.CLIENT_ID,
+                        Dribbble.REDIRECT_URI,
+                        "public+write+comment+upload",
+                        Dribbble.STATE);
 
-                    // 未登录，打开浏览器登录
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
-                }
+                // 未登录，打开浏览器登录
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(loginUrl)));
             }
         };
 

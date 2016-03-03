@@ -29,6 +29,10 @@ import com.lucas.freeshots.model.Bucket;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
@@ -104,55 +108,7 @@ public class BucketsFragment extends Fragment {
         activity = getActivity();
 
         // add new bucket
-        fab.setOnClickListener(v -> {
-            View contentView = LayoutInflater.from(activity).inflate(R.layout.alert_dialog_add_bucket, null);
-
-            EditText bucketNameEt = $(contentView, R.id.bucket_name);
-            EditText bucketDescriptionEt = $(contentView, R.id.bucket_description);
-
-            TextView cancelTv = $(contentView, R.id.cancel);
-            TextView createTv = $(contentView, R.id.create);
-
-            AlertDialog dialog = new AlertDialog.Builder(activity)
-                    .setTitle(R.string.create_new_bucket)
-                    .setView(contentView)
-                    .show();
-
-            cancelTv.setOnClickListener(v1 -> dialog.dismiss());
-
-            createTv.setOnClickListener(v1 -> {
-                String name = bucketNameEt.getText().toString().trim();
-                String description = bucketDescriptionEt.getText().toString().trim();
-
-                if(name.isEmpty()) {
-                    Toast.makeText(activity, "bucket name should not empty", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                Observable<Bucket> observable = DribbbleBucket.addOneBucket(name, description);
-                if(observable == null) {
-                    // TODO:
-                    return;
-                }
-
-                observable.subscribe(new Subscriber<Bucket>() {
-                    @Override
-                    public void onCompleted() {
-                        Toast.makeText(activity, "bucket created", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onNext(Bucket bucket) {
-
-                    }
-                });
-            });
-        });
+        fab.setOnClickListener(v -> addBucket());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity);
 
@@ -263,7 +219,92 @@ public class BucketsFragment extends Fragment {
         }
     }
 
-    private static class BucketAdapter extends PullUpLoadAdapter<Bucket, BucketAdapter.ViewHolder> {
+    private void addBucket() {
+        View contentView = LayoutInflater.from(activity).inflate(R.layout.alert_dialog_add_bucket, null);
+
+        EditText bucketNameEt = $(contentView, R.id.bucket_name);
+        EditText bucketDescriptionEt = $(contentView, R.id.bucket_description);
+
+        TextView cancelTv = $(contentView, R.id.cancel);
+        TextView createTv = $(contentView, R.id.create);
+
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(R.string.create_new_bucket)
+                .setView(contentView)
+                .show();
+
+        cancelTv.setOnClickListener(v1 -> dialog.dismiss());
+
+        createTv.setOnClickListener(v1 -> {
+            String name = bucketNameEt.getText().toString().trim();
+            String description = bucketDescriptionEt.getText().toString().trim();
+
+            if(name.isEmpty()) {
+                Toast.makeText(activity, "bucket name should not empty", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            Observable<Bucket> observable = DribbbleBucket.addOneBucket(name, description);
+            if(observable == null) {
+                // TODO:
+                return;
+            }
+
+            observable.subscribe(new Subscriber<Bucket>() {
+                @Override
+                public void onCompleted() {
+                    Toast.makeText(activity, "bucket created", Toast.LENGTH_LONG).show();
+                    loadFirstPage();
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onNext(Bucket bucket) {
+
+                }
+            });
+        });
+    }
+
+    private boolean deleteBucket(int bucketId) {
+        Call<ResponseBody> call = DribbbleBucket.deleteOneBucket(bucketId);
+        if(call == null) {
+            // TODO:
+            return false;
+        }
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Response<ResponseBody> response) {
+                if(response.code() == 204) {
+                    loadFirstPage();
+                    String msg = "删除bucket成功，id：" + bucketId;
+                    Timber.e(msg);
+                    Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                } else {
+                    String msg = String.format("删除bucket失败，id=%d, code=%d", bucketId, response.code());
+                    Timber.e(msg);
+                    Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                String msg = "bucket.id: " + bucketId + " " + t.getMessage();
+                Timber.e(msg);
+                Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        return true;
+    }
+
+    private class BucketAdapter extends PullUpLoadAdapter<Bucket, BucketAdapter.ViewHolder> {
 
         public BucketAdapter(@NonNull List<Bucket> data) {
             super(data);
@@ -293,10 +334,25 @@ public class BucketsFragment extends Fragment {
             holder.bucketNameTv.setText(bucket.name != null ? bucket.name : "");
             holder.shotCountTv.setText(String.format("%d  shots", bucket.shots_count));
 
-            holder.itemView.setOnClickListener(v -> DisplayOneBucketActivity.startMyself(v.getContext(), bucket));
+            if(holder.viewType == VIEW_TYPE_ITEM) {
+                holder.itemView.setOnClickListener(v -> DisplayOneBucketActivity.startMyself(v.getContext(), bucket));
+                holder.itemView.setOnLongClickListener(v -> {
+                    String delete = "DELETE";
+                    String cancel = "CENCEL";
+
+                    new ShowInfoAlertDialog(activity, "title", "content", null,
+                            new String[]{delete, cancel}, actionName -> {
+                        if (actionName.equals(delete)) {
+                            deleteBucket(bucket.id);
+                        }
+                    }).show();
+
+                    return true;
+                });
+            }
         }
 
-        public static class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
             TextView bucketNameTv;
             TextView shotCountTv;
             int viewType;

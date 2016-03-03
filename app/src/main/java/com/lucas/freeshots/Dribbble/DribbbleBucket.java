@@ -9,12 +9,14 @@ import com.lucas.freeshots.model.Shot;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -62,6 +64,11 @@ public class DribbbleBucket {
                         .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public static @Nullable Call<ResponseBody> deleteOneBucket(int id) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty() ? null : service.deleteOneBucket(id, accessTokenStr);
+    }
+
     private interface Service {
         /**
          * 得到当前登录用户的buckets
@@ -91,7 +98,7 @@ public class DribbbleBucket {
          * 删除一个bucket
          * @param id bucket id
          */
-        @PUT("buckets/{id}")
-        void deleteOneBucket(@Path("id") int id, @Query("access_token") String accessToken);
+        @DELETE("buckets/{id}")
+        Call<ResponseBody> deleteOneBucket(@Path("id") int id, @Query("access_token") String accessToken);
     }
 }

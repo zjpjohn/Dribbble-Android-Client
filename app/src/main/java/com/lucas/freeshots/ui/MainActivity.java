@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import com.lucas.freeshots.Dribbble.DribbbleUser;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.User;
+import com.lucas.freeshots.util.Util;
 
 import java.io.Serializable;
 
@@ -34,6 +36,7 @@ import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.lucas.freeshots.util.Util.$;
 
 public class MainActivity extends AppCompatActivity
@@ -192,9 +195,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         View navHeader = View.inflate(this, R.layout.nav_header_main, null);
-//        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-//        params.height = Util.dp2px(this, 180);
-//        navHeader.setLayoutParams(params);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        params.height = Util.dp2px(this, 180);
+        navHeader.setLayoutParams(params);
         navigationView.addHeaderView(navHeader);
 
         View.OnClickListener listener = v -> {

@@ -2,23 +2,35 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/home" android:icon="@android:drawable/ic_menu_camera"
+        <item
+            android:id="@+id/home"
+            android:icon="@mipmap/ic_drawer_home"
+            android:checkable="false"
             android:title="@string/home" />
-        <item android:id="@+id/my_buckets" android:icon="@android:drawable/ic_menu_gallery"
+        <item
+            android:id="@+id/my_buckets"
+            android:icon="@mipmap/ic_drawer_bucket"
+            android:checkable="false"
             android:title="@string/my_buckets" />
-        <item android:id="@+id/my_likes" android:icon="@android:drawable/ic_menu_slideshow"
+        <item
+            android:id="@+id/my_likes"
+            android:icon="@mipmap/ic_drawer_like"
+            android:checkable="false"
             android:title="@string/my_likes" />
-        <item android:id="@+id/my_shots" android:icon="@android:drawable/ic_menu_manage"
+        <item
+            android:id="@+id/my_shots"
+            android:icon="@mipmap/ic_drawer_shot"
+            android:checkable="false"
             android:title="@string/my_shots" />
     </group>
 
     <!--<item android:title="Communicate">-->
-        <!--<menu>-->
-            <!--<item android:id="@+id/nav_share" android:icon="@android:drawable/ic_menu_share"-->
-                <!--android:title="Share" />-->
-            <!--<item android:id="@+id/nav_send" android:icon="@android:drawable/ic_menu_send"-->
-                <!--android:title="Send" />-->
-        <!--</menu>-->
+    <!--<menu>-->
+    <!--<item android:id="@+id/nav_share" android:icon="@android:drawable/ic_menu_share"-->
+    <!--android:title="Share" />-->
+    <!--<item android:id="@+id/nav_send" android:icon="@android:drawable/ic_menu_send"-->
+    <!--android:title="Send" />-->
+    <!--</menu>-->
     <!--</item>-->
 
 </menu>

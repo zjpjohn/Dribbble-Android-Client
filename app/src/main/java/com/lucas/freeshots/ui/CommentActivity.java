@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +68,7 @@ public class CommentActivity extends AppCompatActivity {
 
         shot = (Shot) getIntent().getSerializableExtra("shot");
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.comments);
+        RecyclerView recyclerView = $(this, R.id.comments);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter = new CommentAdapter(comments));
         recyclerView.addItemDecoration(new LinearVerticalDividerItemDecoration(this));
@@ -95,6 +97,45 @@ public class CommentActivity extends AppCompatActivity {
             // 自动加载首页
             listener.onRefresh();
             refreshLayout.setRefreshing(true);
+        });
+
+        createCommentInit();
+    }
+
+    private void createCommentInit() {
+        FloatingActionButton addCommentBt = $(this, R.id.add_comment_button);
+        EditText newCommentEt = $(this, R.id.new_comment_text);
+        addCommentBt.setOnClickListener(v -> {
+            String comment = newCommentEt.getText().toString().trim();
+            if(comment.isEmpty()) {
+                Toast.makeText(this, "comment must not be empty", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            Observable<Comment> observable = DribbbleComment.createComment(shot.id, comment);
+            if(observable == null) {
+                // TODO: 错误处理
+                return;
+            }
+
+            observable.subscribe(new Subscriber<Comment>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    String errStr = "create comment失败：" + e.getMessage();
+                    Toast.makeText(CommentActivity.this, errStr, Toast.LENGTH_LONG).show();
+                    Timber.e(errStr);
+                }
+
+                @Override
+                public void onNext(Comment comment) {
+
+                }
+            });
         });
     }
 

@@ -75,12 +75,12 @@
                 android:layout_gravity="right"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingBottom="16dp"
-                android:paddingRight="16dp">
+                android:paddingBottom="4dp"
+                android:paddingRight="8dp">
 
                 <ImageView
                     android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_height="16dp"
                     android:scaleType="fitXY"
                     android:src="@mipmap/ic_info_view" />
 
@@ -93,7 +93,7 @@
 
                 <ImageView
                     android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_height="16dp"
                     android:paddingLeft="6dp"
                     android:scaleType="fitXY"
                     android:src="@mipmap/ic_info_comment" />
@@ -107,7 +107,7 @@
 
                 <ImageView
                     android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_height="16dp"
                     android:paddingLeft="4dp"
                     android:scaleType="fitXY"
                     android:src="@mipmap/ic_info_like" />

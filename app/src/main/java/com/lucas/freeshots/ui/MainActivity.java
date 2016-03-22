@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -145,13 +146,18 @@ public class MainActivity extends AppCompatActivity
         resetUserInfo();
     }
 
+    private static final String TITLE_HOME = "Free Shots";
+    private static final String TITLE_MY_BUCKETS = "My Buckets";
+    private static final String TITLE_MY_LIKES = "My Likes";
+    private static final String TITLE_MY_SHOTS = "My Shots";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(TITLE_HOME);
         setSupportActionBar(toolbar);
-
         initDrawer(toolbar);
 
         String accessTokenStr = Common.getAccessTokenStrFromSharedPreferences(this);
@@ -274,11 +280,13 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.main_frame_layout, homeFragment);
             fragmentTransaction.commit();
+            onShowHomeFragment();
         } else if (id == R.id.my_buckets) {
             if(Common.isLogin()) {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.main_frame_layout, bucketsFragment);
                 fragmentTransaction.commit();
+                onShowMyBucketsFragment();
             } else {
                 // 没有登录，无法打开 my buckets
                 Toast.makeText(this, "没有登录，无法打开 my buckets", Toast.LENGTH_LONG).show();
@@ -288,6 +296,7 @@ public class MainActivity extends AppCompatActivity
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.main_frame_layout, likesFragment);
                 fragmentTransaction.commit();
+                onShowMyLikesFragment();
             }else {
                 // 没有登录，无法打开 my likes
                 Toast.makeText(this, "没有登录，无法打开 my likes", Toast.LENGTH_LONG).show();
@@ -297,6 +306,7 @@ public class MainActivity extends AppCompatActivity
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.main_frame_layout, myShotsFragment);
                 fragmentTransaction.commit();
+                onShowMyShotsFragment();
             } else {
                 // 没有登录，无法打开 my shots
                 Toast.makeText(this, "没有登录，无法打开 my shots", Toast.LENGTH_LONG).show();
@@ -306,6 +316,34 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void onShowHomeFragment() {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setTitle(TITLE_HOME);
+        }
+    }
+
+    private void onShowMyBucketsFragment() {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setTitle(TITLE_MY_BUCKETS);
+        }
+    }
+
+    private void onShowMyLikesFragment() {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setTitle(TITLE_MY_LIKES);
+        }
+    }
+
+    private void onShowMyShotsFragment() {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setTitle(TITLE_MY_SHOTS);
+        }
     }
 
     @Override

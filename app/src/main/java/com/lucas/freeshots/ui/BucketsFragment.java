@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.lucas.freeshots.Dribbble.DribbbleBucket;
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Bucket;
 
 import java.util.ArrayList;
@@ -42,8 +43,7 @@ import static com.lucas.freeshots.util.Util.$;
 
 public class BucketsFragment extends Fragment {
     public static BucketsFragment newInstance() {
-        BucketsFragment fragment = new BucketsFragment();
-        return fragment;
+        return new BucketsFragment();
     }
 
     public BucketsFragment() {
@@ -155,7 +155,7 @@ public class BucketsFragment extends Fragment {
             if(observable != null) {
                 observable.subscribe(new BucketsReceivedSubscriber());
             } else {
-                // TODO:
+                Common.writeErrToLogAndShow(activity, "未登录");
             }
         }
     }
@@ -174,7 +174,7 @@ public class BucketsFragment extends Fragment {
             if(observable != null) {
                 observable.subscribe(new BucketsReceivedSubscriber());
             } else {
-                // TODO:
+                Common.writeErrToLogAndShow(activity, "未登录");
             }
         }
     }
@@ -200,8 +200,7 @@ public class BucketsFragment extends Fragment {
         @Override
         public void onError(Throwable e) {
             // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
-            Timber.e("Failure: %s", e.getMessage());
-            Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
+            Common.writeErrToLogAndShow(activity, e.getMessage());
             over();
         }
 
@@ -240,7 +239,7 @@ public class BucketsFragment extends Fragment {
 
             Observable<Bucket> observable = DribbbleBucket.addOneBucket(name, description);
             if(observable == null) {
-                // TODO:
+                Common.writeErrToLogAndShow(activity, "未登录");
                 return;
             }
 
@@ -268,7 +267,7 @@ public class BucketsFragment extends Fragment {
     private boolean deleteBucket(int bucketId) {
         Call<ResponseBody> call = DribbbleBucket.deleteOneBucket(bucketId);
         if(call == null) {
-            // TODO:
+            Common.writeErrToLogAndShow(activity, "未登录");
             return false;
         }
 
@@ -277,21 +276,16 @@ public class BucketsFragment extends Fragment {
             public void onResponse(Response<ResponseBody> response) {
                 if(response.code() == 204) { // success
                     loadFirstPage();
-                    String msg = "删除bucket成功，id：" + bucketId;
-                    Timber.e(msg);
-                    Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                    Common.writeErrToLogAndShow(activity, "删除bucket成功，id：" + bucketId);
                 } else {
                     String msg = String.format("删除bucket失败，id=%d, code=%d", bucketId, response.code());
-                    Timber.e(msg);
-                    Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                    Common.writeErrToLogAndShow(activity, msg);
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                String msg = "bucket.id: " + bucketId + " " + t.getMessage();
-                Timber.e(msg);
-                Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                Common.writeErrToLogAndShow(activity, "bucket.id: " + bucketId + " " + t.getMessage());
             }
         });
 
@@ -354,7 +348,7 @@ public class BucketsFragment extends Fragment {
         private void addShotToBucket(int bucketId) {
             Call<ResponseBody> call = DribbbleBucket.addShotToBucket(bucketId, addedShotId);
             if(call == null) {
-                // TODO:
+                Common.writeErrToLogAndShow(activity, "未登录");
                 return;
             }
 
@@ -364,27 +358,21 @@ public class BucketsFragment extends Fragment {
                 @Override
                 public void onResponse(Response<ResponseBody> response) {
                     if(response.code() == 204) { // success
-                        String msg = "增加成功";
-                        Timber.e(msg);
-                        Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                        Common.writeErrToLogAndShow(activity, "add shot to bucket success");
                         onAddShotToBucket.onSuccess();
                     } else {
-                        String msg = String.format(
-                                "Add a shot to a bucket 失败，bucketId=%d, shotId=%d, code=%d",
-                                bucketId, addedShotId, response.code());
-                        Timber.e(msg);
-                        Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                        Common.writeErrToLogAndShow(activity, String.format(
+                                    "Add a shot to a bucket 失败，bucketId=%d, shotId=%d, code=%d",
+                                    bucketId, addedShotId, response.code()));
                         onAddShotToBucket.onFailed();
                     }
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    String msg = String.format(
-                            "Add a shot to a bucket 失败，bucketId=%d, shotId=%d, %s",
-                            bucketId, addedShotId, t.getMessage());
-                    Timber.e(msg);
-                    Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                    Common.writeErrToLogAndShow(activity, String.format(
+                                    "Add a shot to a bucket 失败，bucketId=%d, shotId=%d, %s",
+                                    bucketId, addedShotId, t.getMessage()));
                     onAddShotToBucket.onFailed();
                 }
             });

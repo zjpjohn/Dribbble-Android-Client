@@ -31,6 +31,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
 import com.lucas.freeshots.Dribbble.DribbbleLikes;
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Shot;
 import com.lucas.freeshots.view.AutoLinefeedLinearLayout;
 
@@ -240,6 +241,7 @@ public class ShowShotActivity extends AppCompatActivity {
     private void checkIfLiked(int shotId) {
         Call<ResponseBody> call = DribbbleLikes.checkLikeShot(shotId);
         if(call == null) {
+            Common.writeErrToLogAndShow(this, "未登录");
             return;
         }
 

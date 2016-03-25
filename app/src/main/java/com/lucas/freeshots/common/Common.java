@@ -4,8 +4,11 @@ package com.lucas.freeshots.common;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import com.lucas.freeshots.Dribbble.Dribbble;
+
+import timber.log.Timber;
 
 public class Common {
 
@@ -36,18 +39,18 @@ public class Common {
 
     /******************************************************************************/
 
-//    private static boolean isLogin = false; // 登录状态，是否登录
-//
-//    public static synchronized void setLoginState(boolean isLogin) {
-//        Common.isLogin = isLogin;
-//    }
-
     /**
      * 判断是否登录
-     * @return
      */
     public static synchronized boolean isLogin() {
         return !Dribbble.getAccessTokenStr().isEmpty();
+    }
+
+    /******************************************************************************/
+
+    public static void writeErrToLogAndShow(Context context, String errMsg) {
+        Timber.e(errMsg);
+        Toast.makeText(context, errMsg, Toast.LENGTH_LONG).show();
     }
 
     /******************************************************************************/

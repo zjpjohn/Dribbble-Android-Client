@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.lucas.freeshots.Dribbble.DribbbleComment;
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Shot;
 
@@ -114,7 +115,7 @@ public class CommentActivity extends AppCompatActivity {
 
             Observable<Comment> observable = DribbbleComment.createComment(shot.id, comment);
             if(observable == null) {
-                // TODO: 错误处理
+                Common.writeErrToLogAndShow(CommentActivity.this, "未登录");
                 return;
             }
 
@@ -126,9 +127,7 @@ public class CommentActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(Throwable e) {
-                    String errStr = "create comment失败：" + e.getMessage();
-                    Toast.makeText(CommentActivity.this, errStr, Toast.LENGTH_LONG).show();
-                    Timber.e(errStr);
+                    Common.writeErrToLogAndShow(CommentActivity.this, "create comment失败：" + e.getMessage());
                 }
 
                 @Override
@@ -155,7 +154,7 @@ public class CommentActivity extends AppCompatActivity {
             if(observable != null) {
                 observable.subscribe(new CommentsReceivedSubscriber());
             } else {
-                // TODO:
+                Common.writeErrToLogAndShow(CommentActivity.this, "未登录");
             }
         }
     }
@@ -172,7 +171,7 @@ public class CommentActivity extends AppCompatActivity {
             if(observable != null) {
                 observable.subscribe(new CommentsReceivedSubscriber());
             } else {
-                // TODO:
+                Common.writeErrToLogAndShow(CommentActivity.this, "未登录");
             }
         }
     }

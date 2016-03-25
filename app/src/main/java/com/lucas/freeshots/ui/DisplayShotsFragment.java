@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Shot;
 import com.lucas.freeshots.util.Util;
 
@@ -165,7 +166,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
             if(observable != null) {
                 observable.subscribe(new ShotsReceivedSubscriber());
             } else {
-                // TODO:
+                Common.writeErrToLogAndShow(activity, "未登录");
             }
         }
     }
@@ -182,7 +183,7 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
             if(observable != null) {
                 observable.subscribe(new ShotsReceivedSubscriber());
             } else {
-                // TODO:
+                Common.writeErrToLogAndShow(activity, "未登录");
             }
         }
     }

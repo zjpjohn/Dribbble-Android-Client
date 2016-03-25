@@ -17,6 +17,7 @@ import retrofit2.RxJavaCallAdapterFactory;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -69,6 +70,11 @@ public class DribbbleBucket {
         return accessTokenStr.isEmpty() ? null : service.deleteOneBucket(id, accessTokenStr);
     }
 
+    public static @Nullable Call<ResponseBody> addShotToBucket(int bucketId, int shotId) {
+        String accessTokenStr = Dribbble.getAccessTokenStr();
+        return accessTokenStr.isEmpty() ? null : service.addShotToBucket(bucketId, accessTokenStr, shotId);
+    }
+
     private interface Service {
         /**
          * 得到当前登录用户的buckets
@@ -76,6 +82,15 @@ public class DribbbleBucket {
         @GET("user/buckets")
         Observable<List<Bucket>> getMyBuckets(@Query("access_token") String accessToken,
                                               @Query("page") int page);
+
+        /**
+         * Add a shot to a bucket
+         * @param id bucket id
+         */
+        @PUT("buckets/{id}/shots")
+        Call<ResponseBody> addShotToBucket(@Path("id") int id,
+                                                 @Query("access_token") String accessToken,
+                                                 @Query("shot_id") int shotId);
 
         /**
          * 得到一个bucket中的shots

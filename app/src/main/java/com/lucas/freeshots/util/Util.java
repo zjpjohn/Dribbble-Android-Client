@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.WindowManager;
 
 public class Util {
+    @SuppressWarnings("unused")
     private final static String TAG = "Util";
 
     private static int screenWidth = -1;
     private static int screenHeight = -1;
 
+    @SuppressWarnings("unused")
     public static int getScreenWidth(Context context) {
         if(screenWidth != -1) {
             return screenWidth;
@@ -25,6 +27,7 @@ public class Util {
         return screenWidth;
     }
 
+    @SuppressWarnings("unused")
     public static int getScreenHeight(Context context) {
         if(screenHeight != -1) {
             return screenHeight;
@@ -39,9 +42,6 @@ public class Util {
 
     /**
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
-     * @param context
-     * @param dpValue
-     * @return
      */
     public static int dp2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -54,10 +54,8 @@ public class Util {
 
     /**
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
-     * @param context
-     * @param pxValue
-     * @return
      */
+    @SuppressWarnings("unused")
     public static int px2dp(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);

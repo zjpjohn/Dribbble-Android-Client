@@ -51,7 +51,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".ui.AddShotToBucketActivity"
+            android:label="Add a shot to a bucket"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

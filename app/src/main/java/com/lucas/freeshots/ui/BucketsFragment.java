@@ -41,47 +41,14 @@ import static com.lucas.freeshots.util.Util.$;
 
 
 public class BucketsFragment extends Fragment {
-//    // TODO: Rename parameter arguments, choose names that match
-//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//
-//    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
-//
-////    private OnFragmentInteractionListener mListener;
-//
-//    /**
-//     * Use this factory method to create a new instance of
-//     * this fragment using the provided parameters.
-//     *
-//     * @param param1 Parameter 1.
-//     * @param param2 Parameter 2.
-//     * @return A new instance of fragment BucketsFragment.
-//     */
-//    // TODO: Rename and change types and number of parameters
-    public static BucketsFragment newInstance(/*String param1, String param2*/) {
+    public static BucketsFragment newInstance() {
         BucketsFragment fragment = new BucketsFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
     public BucketsFragment() {
         // Required empty public constructor
     }
-
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
 
     private BucketAdapter adapter;
     private List<Bucket> buckets = new ArrayList<>();
@@ -92,6 +59,34 @@ public class BucketsFragment extends Fragment {
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
+
+    private enum Mode {
+        SHOW, ADD
+    }
+
+    private Mode mode = Mode.SHOW; // 默认为SHOW模式
+    private int addedShotId = -1;
+
+    public interface OnAddShotToBucket {
+        void onSuccess();
+        void onFailed();
+    }
+
+    @SuppressWarnings("unused")
+    public void setShowMode() {
+        mode = Mode.SHOW;
+    }
+
+    public void setAddMode(int shotId) {
+        if(!(getActivity() instanceof OnAddShotToBucket)) {
+            throw new RuntimeException("设置ADD模式必须实现接口OnAddShotToBucket");
+        }
+
+        if(shotId > 0) {
+            mode = Mode.ADD;
+            addedShotId = shotId;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,7 +123,7 @@ public class BucketsFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                // 滑到了底部则自动加载下一页shot
+                // 滑到了底部则自动加载下一页
                 if (!ViewCompat.canScrollVertically(recyclerView, 1)) {
                     loadNextPage();
                 }
@@ -147,7 +142,7 @@ public class BucketsFragment extends Fragment {
     private int currPage = 0;
 
     /**
-     * 加载第一页shots
+     * 加载第一页
      */
     private void loadFirstPage() {
         if(!isLoading) {
@@ -155,7 +150,6 @@ public class BucketsFragment extends Fragment {
             adapter.setBottomItemVisible(true);
             buckets.clear();
             currPage = 1;
-            //source.get(currPage).subscribe(new BucketsReceivedSubscriber());
 
             Observable<Bucket> observable = DribbbleBucket.getMyBuckets(currPage);
             if(observable != null) {
@@ -167,7 +161,7 @@ public class BucketsFragment extends Fragment {
     }
 
     /**
-     * 加载下一页shots
+     * 加载下一页
      */
     private void loadNextPage() {
         if(!isLoading) {
@@ -281,7 +275,7 @@ public class BucketsFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Response<ResponseBody> response) {
-                if(response.code() == 204) {
+                if(response.code() == 204) { // success
                     loadFirstPage();
                     String msg = "删除bucket成功，id：" + bucketId;
                     Timber.e(msg);
@@ -335,7 +329,12 @@ public class BucketsFragment extends Fragment {
             holder.shotCountTv.setText(String.format("%d  shots", bucket.shots_count));
 
             if(holder.viewType == VIEW_TYPE_ITEM) {
-                holder.itemView.setOnClickListener(v -> DisplayOneBucketActivity.startMyself(v.getContext(), bucket));
+                if(mode == Mode.ADD) {
+                    holder.itemView.setOnClickListener(v -> addShotToBucket(bucket.id));
+                } else {
+                    holder.itemView.setOnClickListener(v -> DisplayOneBucketActivity.startMyself(v.getContext(), bucket));
+                }
+
                 holder.itemView.setOnLongClickListener(v -> {
                     String delete = "DELETE";
                     String cancel = "CENCEL";
@@ -350,6 +349,45 @@ public class BucketsFragment extends Fragment {
                     return true;
                 });
             }
+        }
+
+        private void addShotToBucket(int bucketId) {
+            Call<ResponseBody> call = DribbbleBucket.addShotToBucket(bucketId, addedShotId);
+            if(call == null) {
+                // TODO:
+                return;
+            }
+
+            call.enqueue(new Callback<ResponseBody>() {
+                private OnAddShotToBucket onAddShotToBucket = (OnAddShotToBucket) activity;
+
+                @Override
+                public void onResponse(Response<ResponseBody> response) {
+                    if(response.code() == 204) { // success
+                        String msg = "增加成功";
+                        Timber.e(msg);
+                        Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                        onAddShotToBucket.onSuccess();
+                    } else {
+                        String msg = String.format(
+                                "Add a shot to a bucket 失败，bucketId=%d, shotId=%d, code=%d",
+                                bucketId, addedShotId, response.code());
+                        Timber.e(msg);
+                        Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                        onAddShotToBucket.onFailed();
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    String msg = String.format(
+                            "Add a shot to a bucket 失败，bucketId=%d, shotId=%d, %s",
+                            bucketId, addedShotId, t.getMessage());
+                    Timber.e(msg);
+                    Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                    onAddShotToBucket.onFailed();
+                }
+            });
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {

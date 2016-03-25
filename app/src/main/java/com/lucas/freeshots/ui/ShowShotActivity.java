@@ -83,7 +83,7 @@ public class ShowShotActivity extends AppCompatActivity {
         AppBarLayout appBarLayout = $(this, R.id.app_bar);
         CollapsingToolbarLayout toolbarLayout = $(this, R.id.toolbar_layout);
         SimpleDraweeView shotDv = $(this, R.id.shot);
-        ProgressBar laodingShotPb = $(this, R.id.loadingShot);
+        ProgressBar loadingShotPb = $(this, R.id.loadingShot);
 
         View titleAuthorZone = $(this, R.id.title_author_zone);
         SimpleDraweeView authorIconDv = $(this, R.id.author_icon);
@@ -165,13 +165,13 @@ public class ShowShotActivity extends AppCompatActivity {
                             public void onFinalImageSet(String id, ImageInfo imageInfo,
                                                         Animatable animatable) {
                                 super.onFinalImageSet(id, imageInfo, animatable);
-                                laodingShotPb.setVisibility(View.GONE);
+                                loadingShotPb.setVisibility(View.GONE);
                             }
 
                             @Override
                             public void onFailure(String id, Throwable throwable) {
                                 super.onFailure(id, throwable);
-                                laodingShotPb.setVisibility(View.GONE);
+                                loadingShotPb.setVisibility(View.GONE);
                             }
                         })
                         .setAutoPlayAnimations(true)
@@ -229,7 +229,8 @@ public class ShowShotActivity extends AppCompatActivity {
             }
         });
 
-        commentIv.setOnClickListener((view) -> CommentActivity.startMyself(this, shot));
+        commentIv.setOnClickListener(v -> CommentActivity.startMyself(this, shot));
+        bucketIv.setOnClickListener(v -> AddShotToBucketActivity.startMyself(this, shot.id));
     }
 
     /**

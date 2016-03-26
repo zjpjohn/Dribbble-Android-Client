@@ -12,6 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -283,7 +284,9 @@ public class DisplayShotsFragment extends Fragment implements Serializable {
                 if (shot.user.avatar_url != null) {
                     holder.authorIconDv.setImageURI(Uri.parse(shot.user.avatar_url));
                 }
-                holder.authorNameTv.setText(shot.user.name);
+
+                String html = String.format("<font color=\"Blue\">by </font><font color=\"Gray\"> %s</font>", shot.user.name);
+                holder.authorNameTv.setText(Html.fromHtml(html));
             }
 
             holder.viewsCountTv.setText(String.valueOf(shot.views_count));

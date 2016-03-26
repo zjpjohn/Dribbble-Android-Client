@@ -29,7 +29,7 @@ public abstract class PullUpLoadAdapter<T, VH extends RecyclerView.ViewHolder> e
      * 设置“loading more”item的显隐。
      * @param visible: true 显示，false 隐藏。
      */
-    protected void setBottomItemVisible(boolean visible) {
+    public void setBottomItemVisible(boolean visible) {
         bottomItemVisible = visible;
         notifyDataSetChanged();
     }
@@ -55,7 +55,7 @@ public abstract class PullUpLoadAdapter<T, VH extends RecyclerView.ViewHolder> e
         return size == 0 ? 0 : (bottomItemVisible ? size + 1 : size);
     }
 
-    protected boolean isBottomView(int position) {
+    public boolean isBottomView(int position) {
         return position == data.size();
     }
 }

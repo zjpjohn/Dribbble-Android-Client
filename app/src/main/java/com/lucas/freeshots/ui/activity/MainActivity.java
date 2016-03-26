@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,6 +29,10 @@ import com.lucas.freeshots.Dribbble.DribbbleUser;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.User;
+import com.lucas.freeshots.ui.fragment.BucketsFragment;
+import com.lucas.freeshots.ui.fragment.DisplayShotsFragment;
+import com.lucas.freeshots.ui.fragment.HomeFragment;
+import com.lucas.freeshots.ui.ShowInfoAlertDialog;
 import com.lucas.freeshots.util.Util;
 
 import java.io.Serializable;

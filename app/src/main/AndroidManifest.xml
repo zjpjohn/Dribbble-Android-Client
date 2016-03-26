@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
@@ -22,22 +22,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.ShowShotActivity"
+            android:name=".ui.activity.ShowShotActivity"
             android:label="@string/title_activity_show_shot"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
-            android:name=".ui.CommentActivity"
+            android:name=".ui.activity.CommentActivity"
             android:label="Comment"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
-            android:name=".ui.DisplayOneBucketActivity"
+            android:name=".ui.activity.DisplayOneBucketActivity"
             android:label="Bucket"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
-            android:name=".ui.DribbbleLoginActivity"
+            android:name=".ui.activity.DribbbleLoginActivity"
             android:exported="true"
             android:theme="@style/NoActionBarTranslucent" >
             <intent-filter>
@@ -52,7 +52,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.AddShotToBucketActivity"
+            android:name=".ui.activity.AddShotToBucketActivity"
             android:label="Add a shot to a bucket"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

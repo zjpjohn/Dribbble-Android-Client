@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="right|center_vertical"
         android:fitsSystemWindows="true"
-        tools:context="com.lucas.freeshots.ui.ShowShotActivity">
+        tools:context="com.lucas.freeshots.ui.activity.ShowShotActivity">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar"

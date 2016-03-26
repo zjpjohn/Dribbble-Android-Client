@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import com.lucas.freeshots.Dribbble.DribbbleBucket;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.model.Bucket;
+import com.lucas.freeshots.ui.fragment.DisplayShotsFragment;
 
 public class DisplayOneBucketActivity extends AppCompatActivity {
 

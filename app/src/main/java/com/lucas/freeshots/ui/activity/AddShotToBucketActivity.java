@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,12 +9,13 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.lucas.freeshots.R;
+import com.lucas.freeshots.ui.fragment.BucketsFragment;
 
 import timber.log.Timber;
 
 import static com.lucas.freeshots.util.Util.$;
 
-public class AddShotToBucketActivity extends AppCompatActivity implements BucketsFragment.OnAddShotToBucket{
+public class AddShotToBucketActivity extends AppCompatActivity implements BucketsFragment.OnAddShotToBucket {
 
     public static void startMyself(Context context, int shotId) {
         Intent intent = new Intent(context, AddShotToBucketActivity.class);

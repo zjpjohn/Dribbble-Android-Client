@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.fragment;
 
 import android.app.Activity;
 import android.content.res.Resources;

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.lucas.freeshots.ui.AddShotToBucketActivity">
+    tools:context="com.lucas.freeshots.ui.activity.AddShotToBucketActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/choose_bucket"
-        android:name="com.lucas.freeshots.ui.BucketsFragment"
+        android:name="com.lucas.freeshots.ui.fragment.BucketsFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

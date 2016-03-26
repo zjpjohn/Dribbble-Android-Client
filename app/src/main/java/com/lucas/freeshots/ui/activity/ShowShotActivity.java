@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;

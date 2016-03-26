@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.fragment;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -24,6 +24,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Shot;
+import com.lucas.freeshots.ui.PullUpLoadAdapter;
+import com.lucas.freeshots.ui.activity.ShowShotActivity;
 import com.lucas.freeshots.util.Util;
 
 import java.io.Serializable;

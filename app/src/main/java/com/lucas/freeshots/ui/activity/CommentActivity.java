@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +30,7 @@ import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Shot;
+import com.lucas.freeshots.ui.PullUpLoadAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

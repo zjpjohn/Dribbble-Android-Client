@@ -1,4 +1,4 @@
-package com.lucas.freeshots.ui;
+package com.lucas.freeshots.ui.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,6 +26,9 @@ import com.lucas.freeshots.Dribbble.DribbbleBucket;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Bucket;
+import com.lucas.freeshots.ui.PullUpLoadAdapter;
+import com.lucas.freeshots.ui.ShowInfoAlertDialog;
+import com.lucas.freeshots.ui.activity.DisplayOneBucketActivity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,9 +2,6 @@ package com.lucas.freeshots.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,6 +27,7 @@ import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Comment;
 import com.lucas.freeshots.model.Shot;
+import com.lucas.freeshots.ui.LinearVerticalDividerItemDecoration;
 import com.lucas.freeshots.ui.PullUpLoadAdapter;
 
 import java.util.ArrayList;
@@ -190,16 +188,13 @@ public class CommentActivity extends AppCompatActivity {
         @Override
         public void onCompleted() {
             Timber.e("Completed!");
-            // adapter.notifyItemInserted();
             adapter.notifyDataSetChanged();
             over();
         }
 
         @Override
         public void onError(Throwable e) {
-            // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
-            Timber.e("Failure: %s", e.getMessage());
-            Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
+            Common.writeErrToLogAndShow(CommentActivity.this, e.getMessage());
             over();
         }
 
@@ -210,40 +205,6 @@ public class CommentActivity extends AppCompatActivity {
             }
         }
     }
-
-//    private void refreshComments() {
-//        if(!isLoading) {
-//            isLoading = true;
-//            Dribbble.downloadComment(shot.id).subscribe(new Subscriber<List<Comment>>() {
-//                        @Override
-//                        public void onCompleted() {
-//                            Timber.e("CommentActivity Completed!");
-//                            adapter.notifyDataSetChanged();
-//                            isLoading = false;
-//                            if (refreshLayout != null && refreshLayout.isRefreshing()) {
-//                                refreshLayout.setRefreshing(false);
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onError(Throwable e) {
-//                            Timber.e("listShots Failure: " + e.getMessage());
-//                            Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();  ////////////////////////
-//                            isLoading = false;
-//                            if (refreshLayout != null && refreshLayout.isRefreshing()) {
-//                                refreshLayout.setRefreshing(false);
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onNext(List<Comment> newComments) {
-//                            Timber.e("newComments.size(): " + newComments.size());
-//                            comments.clear();
-//                            comments.addAll(newComments);
-//                        }
-//                    });
-//        }
-//    }
 
     private static class CommentAdapter extends PullUpLoadAdapter<Comment, CommentAdapter.ViewHolder> {
 
@@ -273,14 +234,14 @@ public class CommentActivity extends AppCompatActivity {
 
             Comment comment = data.get(position);
 
-            holder.commentTv.setText(Html.fromHtml(comment.body));
+            holder.commentTv.setText(Html.fromHtml(comment.body).toString().trim());
             holder.updatedTimeTv.setText(comment.updated_at);
 
             if(comment.user != null) {
                 if(comment.user.avatar_url != null) {
                     holder.authorIconDv.setImageURI(Uri.parse(comment.user.avatar_url));
                 }
-                holder.authorNameTv.setText(comment.user.name);
+                holder.authorNameTv.setText(Html.fromHtml(String.format("<b>%s</b>", comment.user.name)));
             }
         }
 
@@ -302,87 +263,6 @@ public class CommentActivity extends AppCompatActivity {
                     commentTv = $(v, R.id.comment);
                     updatedTimeTv = $(v, R.id.updated_time);
                 }
-            }
-        }
-    }
-
-//    static class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
-//        private List<Comment> comments;
-//
-//        public CommentAdapter(@NonNull List<Comment> comments) {
-//            this.comments = comments;
-//        }
-//
-//        @Override
-//        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            return new ViewHolder(LayoutInflater.from(
-//                                    parent.getContext()).inflate(R.layout.comment, parent, false));
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(ViewHolder holder, int position) {
-//            Comment comment = comments.get(position);
-//
-//            holder.commentTv.setText(Html.fromHtml(comment.body));
-//            holder.updatedTimeTv.setText(comment.updated_at);
-//
-//            if(comment.user != null) {
-//                if(comment.user.avatar_url != null) {
-//                    holder.authorIconDv.setImageURI(Uri.parse(comment.user.avatar_url));
-//                }
-//                holder.authorNameTv.setText(comment.user.name);
-//            }
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return comments.size();
-//        }
-//
-//        public static class ViewHolder extends RecyclerView.ViewHolder {
-//            public SimpleDraweeView authorIconDv;
-//            public TextView authorNameTv;
-//            public TextView commentTv;
-//            public TextView updatedTimeTv;
-//
-//            public ViewHolder(View v) {
-//                super(v);
-//                authorIconDv = $(v, R.id.author_icon);
-//                authorNameTv = $(v, R.id.author_name);
-//                commentTv = $(v, R.id.comment);
-//                updatedTimeTv = $(v, R.id.updated_time);
-//            }
-//        }
-//    }
-
-    private static class LinearVerticalDividerItemDecoration extends RecyclerView.ItemDecoration {
-
-        private static final int[] ATTRS = new int[]{
-                android.R.attr.listDivider
-        };
-
-        private Drawable divider;
-
-        public LinearVerticalDividerItemDecoration(Context context) {
-            final TypedArray a = context.obtainStyledAttributes(ATTRS);
-            divider = a.getDrawable(0);
-            a.recycle();
-        }
-
-        @Override
-        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-            // 画水平分割线线
-            int left = parent.getPaddingLeft();
-            int right = parent.getWidth() - parent.getPaddingRight();
-
-            int childCount = parent.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                View child = parent.getChildAt(i);
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
-                int top = child.getBottom() + params.bottomMargin;
-                int bottom = top + divider.getIntrinsicHeight();
-                divider.setBounds(left, top, right, bottom);
-                divider.draw(c);
             }
         }
     }

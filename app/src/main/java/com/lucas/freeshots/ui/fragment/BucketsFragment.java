@@ -2,10 +2,6 @@ package com.lucas.freeshots.ui.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -26,6 +22,7 @@ import com.lucas.freeshots.Dribbble.DribbbleBucket;
 import com.lucas.freeshots.R;
 import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Bucket;
+import com.lucas.freeshots.ui.LinearVerticalDividerItemDecoration;
 import com.lucas.freeshots.ui.PullUpLoadAdapter;
 import com.lucas.freeshots.ui.ShowInfoAlertDialog;
 import com.lucas.freeshots.ui.activity.DisplayOneBucketActivity;
@@ -113,7 +110,6 @@ public class BucketsFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter = new BucketAdapter(buckets));
         recyclerView.addItemDecoration(new LinearVerticalDividerItemDecoration(activity));
-        //recyclerView.setPadding(spacing / 2, spacing / 2, spacing / 2, spacing / 2);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -397,37 +393,4 @@ public class BucketsFragment extends Fragment {
             }
         }
     }
-
-    private static class LinearVerticalDividerItemDecoration extends RecyclerView.ItemDecoration {
-
-        private static final int[] ATTRS = new int[]{
-                android.R.attr.listDivider
-        };
-
-        private Drawable divider;
-
-        public LinearVerticalDividerItemDecoration(Context context) {
-            final TypedArray a = context.obtainStyledAttributes(ATTRS);
-            divider = a.getDrawable(0);
-            a.recycle();
-        }
-
-        @Override
-        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-            // 画水平分割线线
-            int left = parent.getPaddingLeft();
-            int right = parent.getWidth() - parent.getPaddingRight();
-
-            int childCount = parent.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                View child = parent.getChildAt(i);
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
-                int top = child.getBottom() + params.bottomMargin;
-                int bottom = top + divider.getIntrinsicHeight();
-                divider.setBounds(left, top, right, bottom);
-                divider.draw(c);
-            }
-        }
-    }
-
 }

@@ -32,8 +32,8 @@ import com.lucas.freeshots.model.User;
 import com.lucas.freeshots.ui.fragment.BucketsFragment;
 import com.lucas.freeshots.ui.fragment.DisplayShotsFragment;
 import com.lucas.freeshots.ui.fragment.HomeFragment;
-import com.lucas.freeshots.ui.ShowInfoAlertDialog;
 import com.lucas.freeshots.util.Util;
+import com.lucas.freeshots.view.ShowInfoAlertDialog;
 
 import java.io.Serializable;
 

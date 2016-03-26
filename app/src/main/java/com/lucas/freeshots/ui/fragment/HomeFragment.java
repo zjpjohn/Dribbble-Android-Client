@@ -65,10 +65,6 @@ public class HomeFragment extends Fragment implements Serializable {
         for(int i = 0; i < tabTitleList.size(); i++) {
             tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(i)));
         }
-//
-//        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(0)));
-//        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(1)));
-//        tabLayout.addTab(tabLayout.newTab().setText(tabTitleList.get(2)));
 
         final List<Fragment> fragmentList = new ArrayList<>();
 
@@ -85,9 +81,6 @@ public class HomeFragment extends Fragment implements Serializable {
             followingShotsFragment.setSource(DribbbleShot::getFollowingShots);
             fragmentList.add(followingShotsFragment);
         }
-
-
-        //fragmentList.addAll(Arrays.asList(recentShotsFragment, popularShotsFragment, followingShotsFragment));
 
         PagerAdapter adapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override

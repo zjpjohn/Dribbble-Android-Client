@@ -24,8 +24,8 @@ import com.lucas.freeshots.common.Common;
 import com.lucas.freeshots.model.Bucket;
 import com.lucas.freeshots.ui.LinearVerticalDividerItemDecoration;
 import com.lucas.freeshots.ui.PullUpLoadAdapter;
-import com.lucas.freeshots.ui.ShowInfoAlertDialog;
 import com.lucas.freeshots.ui.activity.DisplayOneBucketActivity;
+import com.lucas.freeshots.view.ShowInfoAlertDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,8 +166,6 @@ public class BucketsFragment extends Fragment {
         if(!isLoading) {
             isLoading = true;
             adapter.setBottomItemVisible(true);
-            //source.get(++currPage).subscribe(new BucketsReceivedSubscriber());
-            //DribbbleBucket.getMyBuckets(++currPage).subscribe(new BucketsReceivedSubscriber());
 
             Observable<Bucket> observable = DribbbleBucket.getMyBuckets(++currPage);
             if(observable != null) {
@@ -198,7 +196,6 @@ public class BucketsFragment extends Fragment {
 
         @Override
         public void onError(Throwable e) {
-            // TODO: 如果是超时的话，怎么处理，是不是要重启下载！！！！！！！！！！！！！
             Common.writeErrToLogAndShow(activity, e.getMessage());
             over();
         }

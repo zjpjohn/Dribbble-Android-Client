@@ -135,6 +135,7 @@
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
+                                android:alpha="1"
                                 android:src="@mipmap/ic_info_like" />
 
                             <TextView
@@ -143,6 +144,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp"
+                                android:alpha="1"
                                 android:textColor="@color/colorPrimaryTextWhite" />
                         </LinearLayout>
 
@@ -155,6 +157,7 @@
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
+                                android:alpha="1"
                                 android:src="@mipmap/ic_info_comment" />
 
                             <TextView
@@ -163,6 +166,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp"
+                                android:alpha="1"
                                 android:textColor="@color/colorPrimaryTextWhite" />
                         </LinearLayout>
                     </LinearLayout>
@@ -171,6 +175,7 @@
                     <View
                         android:layout_width="1px"
                         android:layout_height="match_parent"
+                        android:alpha="1"
                         android:background="@color/colorSecondaryText" />
 
                     <LinearLayout
@@ -190,6 +195,7 @@
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
+                                android:alpha="1"
                                 android:src="@mipmap/ic_info_bucket" />
 
                             <TextView
@@ -198,6 +204,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp"
+                                android:alpha="1"
                                 android:textColor="@color/colorPrimaryTextWhite" />
                         </LinearLayout>
 
@@ -210,6 +217,7 @@
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
+                                android:alpha="1"
                                 android:src="@mipmap/ic_info_view" />
 
                             <TextView
@@ -218,6 +226,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingLeft="16dp"
+                                android:alpha="1"
                                 android:textColor="@color/colorPrimaryTextWhite" />
                         </LinearLayout>
                     </LinearLayout>
